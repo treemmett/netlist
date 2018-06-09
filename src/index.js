@@ -5,6 +5,7 @@ import './index.css';
 
 // Components
 import App from './App';
+import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
 
 const Render = () => (
@@ -14,6 +15,7 @@ const Render = () => (
 
       <Switch>
         <Route exact path="/" component={App}/>
+        <Route exact path="/servers" component={ServerList}/>
       </Switch>
       </React.Fragment>
   </Router>
