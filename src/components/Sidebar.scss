@@ -1,0 +1,35 @@
+$bg: #333;
+$fg: #eee;
+
+.sidebar{
+  flex: 0 15em;
+  background-color: $bg;
+
+  .brand{
+    font-family: 'Raleway', 'Open Sans', monospace;
+    padding-left: 2em;
+    padding-top: 1em;
+    padding-bottom: 0.5em;
+    font-size: 18px;
+  }
+
+  a{
+    color: #eee;
+    text-decoration: inherit;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 1em 2em;
+    transition: background-color 0.1s linear;
+    will-change: background-color;
+    box-sizing: border-box;
+
+    &:not(.brand):hover{
+      background-color: darken($bg, 2%);
+    }
+
+    &:not(.brand).active{
+      background-color: darken($bg, 4%);
+    }
+  }
+}
