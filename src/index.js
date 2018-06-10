@@ -17,7 +17,7 @@ const Render = () => (
         <Route exact path="/" component={App}/>
         <Route exact path="/servers" component={ServerList}/>
       </Switch>
-      </React.Fragment>
+    </React.Fragment>
   </Router>
 );
 
