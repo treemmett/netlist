@@ -1,10 +1,16 @@
 .serverList{
   padding: 1em;
   position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .actions{
+    flex: 0;
+    margin-bottom: 0.5rem;
+  }
 
   .table{
-    height: 100%;
+    flex: 1;
     position: relative;
     border-radius: 0.5em;
     overflow: hidden;

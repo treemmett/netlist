@@ -1,0 +1,30 @@
+$main: #4285f4;
+
+.btn{
+  display: inline-block;
+  background-color: $main;
+  color: #fff;
+  font-family: 'Google Sans', 'Open Sans', sans-serif;
+  letter-spacing: 0.3px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding: 0.7rem 1rem;
+  transition: background-color 0.2s ease-in-out;
+  text-transform: uppercase;
+  user-select: none;
+  outline: none;
+  border: none;
+
+  &:hover{
+    background-color: darken($main, 3%);
+  }
+
+  &:active{
+    background-color: darken($main, 6%);
+  }
+
+  & + &{
+    margin-left: 0.25rem;
+  }
+}

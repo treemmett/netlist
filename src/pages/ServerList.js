@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Fab from '../components/Fab';
 import './ServerList.scss';
 
 export default class ServerList extends Component{
@@ -11,6 +10,9 @@ export default class ServerList extends Component{
 
     return (
       <div className="serverList page">
+        <div className="actions">
+          <div className="btn">New Server</div>
+        </div>
         <div className="table">
           <div className="tbl-header">
             <table cellPadding="0" cellSpacing="0" border="0">
@@ -33,7 +35,6 @@ export default class ServerList extends Component{
             </table>
           </div>
         </div>
-        <Fab text="New Server" action={e => alert('Click')}/>
       </div>
     );
   }

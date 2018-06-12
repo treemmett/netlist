@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+
+// Global styles
+import './index.scss';
+import './components/Components.scss';
 
 // Components
 import App from './App';
