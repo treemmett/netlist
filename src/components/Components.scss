@@ -1,4 +1,5 @@
 $main: #4285f4;
+$secondary: #bbb;
 
 .btn{
   display: inline-block;
@@ -10,6 +11,8 @@ $main: #4285f4;
   cursor: pointer;
   border-radius: 0.5rem;
   padding: 0.7rem 1rem;
+  min-width: 80px;
+  text-align: center;
   transition: background-color 0.2s ease-in-out;
   text-transform: uppercase;
   user-select: none;
@@ -17,11 +20,23 @@ $main: #4285f4;
   border: none;
 
   &:hover{
-    background-color: darken($main, 3%);
+    background-color: darken($main, 5%);
   }
 
   &:active{
-    background-color: darken($main, 6%);
+    background-color: darken($main, 10%);
+  }
+
+  &.secondary{
+    background-color: $secondary;
+
+    &:hover{
+      background-color: darken($secondary, 5%);
+    }
+
+    &:active{
+      background-color: darken($secondary, 10%);
+    }
   }
 
   & + &{
@@ -54,6 +69,11 @@ $main: #4285f4;
     box-sizing: border-box;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+
+    .title{
+      font-size: 20px;
+      margin-bottom: 1rem;
+    }
   }
 }
 
@@ -64,7 +84,7 @@ form.grid{
   grid-template-columns: auto 3fr auto;
   overflow-x: hidden;
 
-  label{
+  label:not(.pretty){
     display: inline-block;
     grid-column: 1;
     padding-right: 1em;
@@ -73,7 +93,7 @@ form.grid{
     text-overflow: ellipsis;
   }
 
-  input{
+  input[type=text], input[type=date], input[type=number]{
     display: inline-block;
     grid-column: 2;
     padding: 0.3em 0.5em;
@@ -86,6 +106,13 @@ form.grid{
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .actions{
+    display: flex;
+    justify-content: flex-end;
+    grid-column-start: 1;
+    grid-column-end: 3;
   }
 }
 

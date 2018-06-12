@@ -101,6 +101,7 @@ class Modal extends Component{
     return (
       <div className="modal">
         <div className="modalCard">
+          <div className="title">New Server</div>
           <form className="grid">
             <label htmlFor="server_name">Server Name</label>
             <input type="text" id="server_name" name="server_name"/>
@@ -111,6 +112,9 @@ class Modal extends Component{
             <label htmlFor="site">Site</label>
             <input type="text" id="site" name="site"/>
 
+            <label htmlFor="os">OS</label>
+            <input type="text" id="os" name="os"/>
+
             <label htmlFor="cpu">CPU</label>
             <input type="text" id="cpu" name="cpu"/>
 
@@ -120,10 +124,39 @@ class Modal extends Component{
             <label htmlFor="disks">Disks</label>
             <input type="text" id="disks" name="disks"/>
 
+            <label htmlFor="vlan">VLAN</label>
+            <input type="text" id="vlan" name="vlan"/>
+
+            <label htmlFor="maint_win">Maintenance Window</label>
+            <input type="text" id="maint_win" name="maint_win"/>
+
+            <label htmlFor="owner">Owner</label>
+            <input type="text" id="owner" name="owner"/>
+
+            <label htmlFor="url">Application URL</label>
+            <input type="text" id="url" name="url"/>
+
+            <label htmlFor="backup_date">Last Backup Date</label>
+            <input type="date" id="backup_date" name="backup_date"/>
+
+            <label htmlFor="patch_date">Last Patch Date</label>
+            <input type="date" id="patch_date" name="patch_date"/>
+
+            <label htmlFor="updated_by">Last Updated By</label>
+            <input type="text" id="updated_by" name="updated_by"/>
+
+            <label htmlFor="monitoring">Monitoring Configured</label>
+            <input type="text" id="monitoring" name="monitoring"/>
+
             <label htmlFor="applications_0">Applications</label>
             <input type="text" id="applications_0" name="applications_0"/>
             <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
             {this.state.appInputs}
+
+            <div className="actions">
+              <input className="btn" type="submit" value="Save"/>
+              <input className="btn secondary" type="button" value="Cancel"/>
+            </div>
           </form>
         </div>
       </div>
