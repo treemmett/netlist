@@ -67,6 +67,36 @@ class Row extends Component{
 }
 
 class Modal extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      appInputs: []
+    }
+
+    this.totalApps = 0;
+  }
+
+  addApp = e => {
+    const appInputs = this.state.appInputs.slice(0);
+    const curI = this.totalApps;
+    this.totalApps++;
+
+    appInputs.push(<React.Fragment key={curI}>
+      <input type="text" id={'applications_'+(curI+1)} name={'applications_'+(curI+1)}/>
+      <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
+    </React.Fragment>);
+
+    this.setState({appInputs: appInputs});
+  }
+
+  removeApp = key => {
+    const appInputs = this.state.appInputs.slice(0);
+    const curInput = appInputs.find(obj => obj.key === key.toString());
+    const index = appInputs.indexOf(curInput);
+    appInputs.splice(index, 1);
+    this.setState({appInputs: appInputs});
+  }
+
   render(){
     return (
       <div className="modal">
@@ -92,6 +122,8 @@ class Modal extends Component{
 
             <label htmlFor="applications_0">Applications</label>
             <input type="text" id="applications_0" name="applications_0"/>
+            <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
+            {this.state.appInputs}
           </form>
         </div>
       </div>

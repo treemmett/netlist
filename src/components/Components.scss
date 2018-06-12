@@ -61,12 +61,13 @@ form.grid{
   display: grid;
   grid-row-gap: 0.5em;
   grid-column-gap: 0.5em;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: auto 3fr auto;
+  overflow-x: hidden;
 
   label{
     display: inline-block;
     grid-column: 1;
-    padding-right: 2em;
+    padding-right: 1em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -79,5 +80,37 @@ form.grid{
     border-radius: 5px;
     border: 1px solid #ccc;
     outline: none;
+  }
+
+  .icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.icon{
+  svg{
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: darken(#aaa, 50%);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &.click{
+    cursor: pointer;
+
+    svg{
+      stroke: #aaa;
+      transition: stroke 0.1s linear;
+    }
+
+    &:hover{
+      svg{
+        stroke: darken(#aaa, 50%);
+      }
+    }
   }
 }
