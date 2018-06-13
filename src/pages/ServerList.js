@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './ServerList.scss';
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
+import Check from '../svg/Check';
 
 export default class ServerList extends Component{
   constructor(props){
@@ -180,7 +181,8 @@ class Modal extends Component{
             <input type="text" id="updatedBy"/>
 
             <label htmlFor="monitoring">Monitoring Configured</label>
-            <input type="text" id="monitoring"/>
+            <input className="checkbox" type="checkbox" id="monitoring"/>
+            <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
             <label htmlFor="applications_0">Applications</label>
             <input type="text" id="applications_0"/>

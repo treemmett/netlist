@@ -89,7 +89,7 @@ form.grid{
   grid-template-columns: auto 3fr auto;
   overflow-x: hidden;
 
-  label:not(.pretty){
+  label:not(.checkbox){
     display: inline-block;
     grid-column: 1;
     padding-right: 1em;
@@ -109,6 +109,34 @@ form.grid{
 
     &:focus{
       border-color: darken(#ccc, 40%)
+    }
+  }
+
+  input[type=checkbox].checkbox{
+    position: fixed;
+    opacity: 0;
+    cursor: default;
+    left: -500%;
+    top: -500%;
+
+    & + label.checkbox{
+      height: 22px;
+      width: 22px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+
+      svg{
+        display: none;
+        stroke-width: 1.5;
+      }
+    }
+
+    &:checked + label.checkbox{
+
+      svg{
+        display: block;
+      }
     }
   }
 
