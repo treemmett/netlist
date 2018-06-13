@@ -7,22 +7,29 @@ export default class ServerList extends Component{
   constructor(props){
     super(props);
     this.state = {
-      modal: true
+      modal: false,
+      data: []
     }
+  }
+
+  addToData = newData => {
+    const data = this.state.data.slice(0);
+    data.push(newData);
+    this.setState({data: data});
   }
 
   render(){
     const rows = [];
-    while(rows.length < 20){
-      rows.push(<Row key={rows.length}/>);
+    while(rows.length < this.state.data.length){
+      rows.push(<Row data={this.state.data[rows.length]} key={rows.length}/>);
     }
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal/> : null}
+        {this.state.modal ? <Modal save={this.addToData} close={e => this.setState({modal: false})}/> : null}
         <div className="serverList page">
           <div className="actions">
-            <div className="btn">New Server</div>
+            <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
           </div>
           <div className="table">
             <div className="tbl-header">
@@ -33,7 +40,6 @@ export default class ServerList extends Component{
                     <th>Applications</th>
                     <th>Last Updated</th>
                     <th>Last Updater</th>
-                    <th>Status</th>
                   </tr>
                 </thead>
               </table>
@@ -54,13 +60,14 @@ export default class ServerList extends Component{
 
 class Row extends Component{
   render(){
+    const data = this.props.data;
+
     return (
       <tr>
-        <td>DCA21001</td>
-        <td>3</td>
-        <td>Jun 1, 2018</td>
-        <td>John Doe</td>
-        <td>Online</td>
+        <td>{data.serverName}</td>
+        <td>{data.applications.length}</td>
+        <td>{data.patchDate}</td>
+        <td>{data.updatedBy}</td>
       </tr>
     );
   }
@@ -97,65 +104,92 @@ class Modal extends Component{
     this.setState({appInputs: appInputs});
   }
 
+  save = e => {
+    e.preventDefault();
+
+    // Compile data from form
+    const data = {
+      applications: []
+    };
+
+    for(let i of e.target){
+      // Skip buttons and submit
+      if(i.type.match(/button|submit/i)){
+        continue;
+      }
+
+      // Add applictions to separate array
+      if(i.id.match(/^applications_/i)){
+        data.applications.push(i.value.trim());
+        continue;
+      }
+
+      data[i.id] = i.value.trim();
+    }
+
+    this.props.save(data);
+    this.props.close();
+  }
+
   render(){
     return (
-      <div className="modal">
-        <div className="modalCard">
+      <div className="modal" onClick={this.props.close}>
+        <div className="modalCard" onClick={e => e.stopPropagation()}>
           <div className="title">New Server</div>
-          <form className="grid">
-            <label htmlFor="server_name">Server Name</label>
-            <input type="text" id="server_name" name="server_name"/>
+          <form onSubmit={this.save} className="grid">
+            <label htmlFor="serverName">Server Name</label>
+            <input type="text" id="serverName" autoFocus/>
 
-            <label htmlFor="dns_name">DNS Name</label>
-            <input type="text" id="dns_name" name="dns_name"/>
+            <label htmlFor="dnsName">DNS Name</label>
+            <input type="text" id="dnsName"/>
 
             <label htmlFor="site">Site</label>
-            <input type="text" id="site" name="site"/>
+            <input type="text" id="site"/>
 
             <label htmlFor="os">OS</label>
-            <input type="text" id="os" name="os"/>
+            <input type="text" id="os"/>
 
             <label htmlFor="cpu">CPU</label>
-            <input type="text" id="cpu" name="cpu"/>
+            <input type="text" id="cpu"/>
 
             <label htmlFor="memory">Memory</label>
-            <input type="text" id="memory" name="memory"/>
+            <input type="text" id="memory"/>
 
             <label htmlFor="disks">Disks</label>
-            <input type="text" id="disks" name="disks"/>
+            <input type="text" id="disks"/>
 
             <label htmlFor="vlan">VLAN</label>
-            <input type="text" id="vlan" name="vlan"/>
+            <input type="text" id="vlan"/>
 
-            <label htmlFor="maint_win">Maintenance Window</label>
-            <input type="text" id="maint_win" name="maint_win"/>
+            <label htmlFor="maintWin">Maintenance Window</label>
+            <input type="text" id="maintWin"/>
 
             <label htmlFor="owner">Owner</label>
-            <input type="text" id="owner" name="owner"/>
+            <input type="text" id="owner"/>
 
             <label htmlFor="url">Application URL</label>
-            <input type="text" id="url" name="url"/>
+            <input type="text" id="url"/>
 
-            <label htmlFor="backup_date">Last Backup Date</label>
-            <input type="date" id="backup_date" name="backup_date"/>
+            <label htmlFor="backupDate">Last Backup Date</label>
+            <input type="date" id="backupDate"/>
 
-            <label htmlFor="patch_date">Last Patch Date</label>
-            <input type="date" id="patch_date" name="patch_date"/>
+            <label htmlFor="patchDate">Last Patch Date</label>
+            <input type="date" id="patchDate"/>
 
-            <label htmlFor="updated_by">Last Updated By</label>
-            <input type="text" id="updated_by" name="updated_by"/>
+            <label htmlFor="updatedBy">Last Updated By</label>
+            <input type="text" id="updatedBy"/>
 
             <label htmlFor="monitoring">Monitoring Configured</label>
-            <input type="text" id="monitoring" name="monitoring"/>
+            <input type="text" id="monitoring"/>
 
             <label htmlFor="applications_0">Applications</label>
-            <input type="text" id="applications_0" name="applications_0"/>
+            <input type="text" id="applications_0"/>
             <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
             {this.state.appInputs}
 
             <div className="actions">
               <input className="btn" type="submit" value="Save"/>
-              <input className="btn secondary" type="button" value="Cancel"/>
+              <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
             </div>
           </form>
         </div>

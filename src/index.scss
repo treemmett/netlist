@@ -2,6 +2,23 @@
 
 $main: #4285f4;
 
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100vh;
+  background-color: #efefef;
+}
+
+#root{
+  display: flex;
+  height: 100%;
+}
+
+.page{
+  flex: 1;
+}
+
 *{
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
@@ -28,21 +45,4 @@ $main: #4285f4;
   ::-webkit-scrollbar-corner {
       background-color: transparent;
   }
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  height: 100vh;
-}
-
-#root{
-  display: flex;
-  height: 100%;
-}
-
-.page{
-  background-color: #efefef;
-  flex: 1;
 }
