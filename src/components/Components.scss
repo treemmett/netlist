@@ -89,7 +89,7 @@ form.grid{
   grid-template-columns: auto 3fr auto;
   overflow-x: hidden;
 
-  label:not(.checkbox){
+  label:not(.checkbox):not(.radio){
     display: inline-block;
     grid-column: 1;
     padding-right: 1em;
@@ -110,6 +110,15 @@ form.grid{
     &:focus{
       border-color: darken(#ccc, 40%)
     }
+
+    &::-webkit-inner-spin-button{
+      display: none;
+      -webkit-appearance: none;
+    }
+  }
+
+  input[type=date]{
+    width: 8.5em;
   }
 
   input[type=checkbox].checkbox{
@@ -136,6 +145,47 @@ form.grid{
 
       svg{
         display: block;
+      }
+    }
+  }
+
+  .radios{
+    white-space: nowrap;
+  }
+
+  input[type=radio].radio{
+    position: fixed;
+    opacity: 0;
+    cursor: default;
+    left: -500%;
+    top: -500%;
+
+    & + label.radio{
+      display: inline-block;
+      padding: 0.3em 0.5em;
+      text-align: center;
+      user-select: none;
+      border: 1px solid #ccc;
+      border-right: none;
+
+      &:first-of-type{
+        border-radius: 5px 0 0 5px;
+      }
+
+      &:last-of-type{
+        border-radius: 0 5px 5px 0;
+        border-right: 1px solid #ccc;
+      }
+    }
+
+    &:checked + label.radio{
+      background-color: $main;
+      border-color: $main;
+      color: #fff;
+
+      + * + label{
+        border-left: none;
+        padding-left: calc(0.5em + 1px);
       }
     }
   }

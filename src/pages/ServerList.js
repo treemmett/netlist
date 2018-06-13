@@ -119,8 +119,27 @@ class Modal extends Component{
         continue;
       }
 
+      // Correct parsing for radios
+      if(i.type.match(/radio/i)){
+        if(i.checked){
+          data[i.name] = i.value;
+        }
+
+        continue;
+      }
+
+      // Correct parsing for checkbox
+      if(i.type.match(/checkbox/i)){
+        data[i.id] = i.checked;
+        continue;
+      }
+
       // Add applictions to separate array
       if(i.id.match(/^applications_/i)){
+        if(!i.value.trim()){
+          continue;
+        }
+
         data.applications.push(i.value.trim());
         continue;
       }
@@ -128,6 +147,7 @@ class Modal extends Component{
       data[i.id] = i.value.trim();
     }
 
+    console.log(data);
     this.props.save(data);
     this.props.close();
   }
@@ -162,6 +182,18 @@ class Modal extends Component{
             <label htmlFor="vlan">VLAN</label>
             <input type="text" id="vlan"/>
 
+            <label>Virtualization Type</label>
+            <div className="radios">
+              <input className="radio" type="radio" name="virtualization" id="virt_1" value="physical"/>
+              <label className="radio" htmlFor="virt_1">Physical</label>
+
+              <input className="radio" type="radio" name="virtualization" id="virt_2" value="virtual"/>
+              <label className="radio" htmlFor="virt_2">Virtual</label>
+
+              <input className="radio" type="radio" name="virtualization" id="virt_3" value="cloud"/>
+              <label className="radio" htmlFor="virt_3">Cloud</label>
+            </div>
+
             <label htmlFor="maintWin">Maintenance Window</label>
             <input type="text" id="maintWin"/>
 
@@ -179,6 +211,15 @@ class Modal extends Component{
 
             <label htmlFor="updatedBy">Last Updated By</label>
             <input type="text" id="updatedBy"/>
+
+            <label>Server Type</label>
+            <div className="radios">
+              <input className="radio" type="radio" name="server_type" id="type_1" value="appliance"/>
+              <label className="radio" htmlFor="type_1">Appliance</label>
+
+              <input className="radio" type="radio" name="server_type" id="type_2" value="server"/>
+              <label className="radio" htmlFor="type_2">Server</label>
+            </div>
 
             <label htmlFor="monitoring">Monitoring Configured</label>
             <input className="checkbox" type="checkbox" id="monitoring"/>
