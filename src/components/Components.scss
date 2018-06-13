@@ -50,11 +50,12 @@ $secondary: #bbb;
   align-items: center;
   justify-content: center;
   overflow: auto;
+  overflow: overlay;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  padding: 1rem;
+  padding: 3rem 2rem;
   background-color: #000;
   background-color: rgba(#000, 0.5);
   z-index: 100;
@@ -74,6 +75,10 @@ $secondary: #bbb;
       font-size: 20px;
       margin-bottom: 1rem;
     }
+  }
+
+  &::-webkit-scrollbar-thumb{
+    background-color: rgba(#fff, .5);
   }
 }
 
@@ -100,6 +105,11 @@ form.grid{
     border-radius: 5px;
     border: 1px solid #ccc;
     outline: none;
+    transition: border-color 0.1s linear;
+
+    &:focus{
+      border-color: darken(#ccc, 40%)
+    }
   }
 
   .icon{
