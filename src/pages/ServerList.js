@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ServerList.scss';
+
+// Icons
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
@@ -22,22 +24,27 @@ export default class ServerList extends Component{
     // API call to get all servers
     axios.get('/netlist/api/servers').then(res => {
 
-      // Sort data by servername
-      res.data.sort(((a, b) => {
-        if(a.serverName > b.serverName) return 1;
-        if(a.serverName < b.serverName) return -1;
-        return 0;
-      }));
-
       // Update data in app
-      this.setState({data: res.data});
+      this.setState({data: this.sortServers(res.data)});
     });
   }
 
   addToData = newData => {
     const data = this.state.data.slice(0);
     data.push(newData);
-    this.setState({data: data});
+    this.setState({data: this.sortServers(data)});
+  }
+
+  sortServers = data => {
+    data.sort(((a, b) => {
+      try{
+        if(a.serverName.toLowerCase() > b.serverName.toLowerCase()) return 1;
+        if(a.serverName.toLowerCase() < b.serverName.toLowerCase()) return -1;
+      }catch(e){ /* We don't care about catching anything here. Must likely due to missing servername */}
+      return 0;
+    }));
+
+    return data;
   }
 
   render(){
