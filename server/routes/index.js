@@ -1,6 +1,5 @@
 const routes = require('express').Router();
 
-routes.get('*', (req, res) => res.send({success: true}));
-routes.all('*', (req, res) => res.send(req.body));
+routes.use('/servers', require('./servers'));
 
 module.exports = routes;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './ServerList.scss';
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
@@ -11,6 +12,26 @@ export default class ServerList extends Component{
       modal: false,
       data: []
     }
+  }
+
+  componentDidMount(){
+    this.getServers();
+  }
+
+  getServers = () => {
+    // API call to get all servers
+    axios.get('/netlist/api/servers').then(res => {
+
+      // Sort data by servername
+      res.data.sort(((a, b) => {
+        if(a.serverName > b.serverName) return 1;
+        if(a.serverName < b.serverName) return -1;
+        return 0;
+      }));
+
+      // Update data in app
+      this.setState({data: res.data});
+    });
   }
 
   addToData = newData => {
