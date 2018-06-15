@@ -7,6 +7,7 @@
     "body-parser": "^1.18.3",
     "custom-react-scripts": "^0.2.2",
     "express": "^4.16.3",
+    "mongoose": "^5.1.5",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-router-dom": "^4.3.1"

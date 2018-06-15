@@ -4,6 +4,9 @@
 # testing
 /coverage
 
+# app configurations
+/server/config.json
+
 # production
 /build
 

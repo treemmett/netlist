@@ -1,4 +1,28 @@
 const servers = require('express').Router();
+const mongoose = require('mongoose');
+
+const serverSchema = mongoose.Schema({
+  applications: [{type: String}],
+  backupDate: String,
+  cpu: String,
+  disks: String,
+  dnsName: String,
+  maintWin: String,
+  memory: String,
+  monitoring: Boolean,
+  os: String,
+  owner: String,
+  patchDate: String,
+  serverName: {type: String, required: true},
+  updatedBy: String,
+  virtualization: {
+    type: String,
+    enum: ['physical', 'virtual', 'cloud']
+  },
+  vlan: String
+});
+
+const Server = mongoose.model('Server', serverSchema);
 
 servers.get('/', (req, res, next) => {
   const exampleData = [
