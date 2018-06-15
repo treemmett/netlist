@@ -13,7 +13,7 @@ const serverSchema = mongoose.Schema({
   os: String,
   owner: String,
   patchDate: String,
-  serverName: {type: String, required: true},
+  serverName: {type: String, required: true, unique: true},
   updatedBy: String,
   virtualization: {
     type: String,
@@ -65,6 +65,23 @@ servers.get('/', (req, res, next) => {
   ];
   
   res.send(exampleData);
+});
+servers.post('/', (req, res, next) => {
+  const newServer = new Server(req.body);
+  newServer.save(err => {
+    if(err){
+      next(err);
+      return;
+    }
+
+    // Duplicate object for response
+    const response = {...newServer}._doc;
+
+    // Remove database keys
+    delete response.__v;
+    delete response._id;
+    res.send(response);
+  });
 });
 servers.all('/', (req, res, next) => res.set('Allow', 'GET').status(405).end());
 
