@@ -106,13 +106,17 @@ class Modal extends Component{
   constructor(props){
     super(props);
     this.state = {
-      appInputs: []
+      appInputs: [],
+      disabled: false
     }
 
     this.totalApps = 0;
   }
 
   addApp = e => {
+    // Skip if form is locked
+    if(this.state.disabled) return;
+
     const appInputs = this.state.appInputs.slice(0);
     const curI = this.totalApps;
     this.totalApps++;
@@ -126,6 +130,9 @@ class Modal extends Component{
   }
 
   removeApp = key => {
+    // Skip if form is locked
+    if(this.state.disabled) return;
+    
     const appInputs = this.state.appInputs.slice(0);
     const curInput = appInputs.find(obj => obj.key === key.toString());
     const index = appInputs.indexOf(curInput);
@@ -135,6 +142,9 @@ class Modal extends Component{
 
   save = e => {
     e.preventDefault();
+    
+    // Disable form
+    this.setState({disabled: true});
 
     // Compile data from form
     const data = {
@@ -172,97 +182,107 @@ class Modal extends Component{
         continue;
       }
 
+      // Skip empty fields
+      if(!i.value.trim()) continue;
+
       data[i.id] = i.value.trim();
     }
 
-    console.log(data);
-    this.props.save(data);
-    this.props.close();
+    axios.post('/netlist/api/servers', data).then(res => {
+      // Add new data to table
+      this.props.save(res.data);
+
+      // Close modal
+      this.props.close();
+    });
   }
 
   render(){
     return (
-      <div className="modal" onClick={this.props.close}>
+      <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
         <div className="modalCard" onClick={e => e.stopPropagation()}>
+          {this.state.disabled ? <div className="spinner"/> : null}
           <div className="title">New Server</div>
-          <form onSubmit={this.save} className="grid">
-            <label htmlFor="serverName">Server Name</label>
-            <input type="text" id="serverName" autoFocus/>
+          <fieldset disabled={this.state.disabled}>
+            <form onSubmit={this.save} className="grid">
+              <label htmlFor="serverName">Server Name</label>
+              <input type="text" id="serverName" autoFocus required/>
 
-            <label htmlFor="dnsName">DNS Name</label>
-            <input type="text" id="dnsName"/>
+              <label htmlFor="dnsName">DNS Name</label>
+              <input type="text" id="dnsName"/>
 
-            <label htmlFor="site">Site</label>
-            <input type="text" id="site"/>
+              <label htmlFor="site">Site</label>
+              <input type="text" id="site"/>
 
-            <label htmlFor="os">OS</label>
-            <input type="text" id="os"/>
+              <label htmlFor="os">OS</label>
+              <input type="text" id="os"/>
 
-            <label htmlFor="cpu">CPU</label>
-            <input type="text" id="cpu"/>
+              <label htmlFor="cpu">CPU</label>
+              <input type="text" id="cpu"/>
 
-            <label htmlFor="memory">Memory</label>
-            <input type="text" id="memory"/>
+              <label htmlFor="memory">Memory</label>
+              <input type="text" id="memory"/>
 
-            <label htmlFor="disks">Disks</label>
-            <input type="text" id="disks"/>
+              <label htmlFor="disks">Disks</label>
+              <input type="text" id="disks"/>
 
-            <label htmlFor="vlan">VLAN</label>
-            <input type="text" id="vlan"/>
+              <label htmlFor="vlan">VLAN</label>
+              <input type="text" id="vlan"/>
 
-            <label>Virtualization Type</label>
-            <div className="radios">
-              <input className="radio" type="radio" name="virtualization" id="virt_1" value="physical"/>
-              <label className="radio" htmlFor="virt_1">Physical</label>
+              <label>Virtualization Type</label>
+              <div className="radios">
+                <input className="radio" type="radio" name="virtualization" id="virt_1" value="physical"/>
+                <label className="radio" htmlFor="virt_1">Physical</label>
 
-              <input className="radio" type="radio" name="virtualization" id="virt_2" value="virtual"/>
-              <label className="radio" htmlFor="virt_2">Virtual</label>
+                <input className="radio" type="radio" name="virtualization" id="virt_2" value="virtual"/>
+                <label className="radio" htmlFor="virt_2">Virtual</label>
 
-              <input className="radio" type="radio" name="virtualization" id="virt_3" value="cloud"/>
-              <label className="radio" htmlFor="virt_3">Cloud</label>
-            </div>
+                <input className="radio" type="radio" name="virtualization" id="virt_3" value="cloud"/>
+                <label className="radio" htmlFor="virt_3">Cloud</label>
+              </div>
 
-            <label htmlFor="maintWin">Maintenance Window</label>
-            <input type="text" id="maintWin"/>
+              <label htmlFor="maintWin">Maintenance Window</label>
+              <input type="text" id="maintWin"/>
 
-            <label htmlFor="owner">Owner</label>
-            <input type="text" id="owner"/>
+              <label htmlFor="owner">Owner</label>
+              <input type="text" id="owner"/>
 
-            <label htmlFor="url">Application URL</label>
-            <input type="text" id="url"/>
+              <label htmlFor="url">Application URL</label>
+              <input type="text" id="url"/>
 
-            <label htmlFor="backupDate">Last Backup Date</label>
-            <input type="date" id="backupDate"/>
+              <label htmlFor="backupDate">Last Backup Date</label>
+              <input type="date" id="backupDate"/>
 
-            <label htmlFor="patchDate">Last Patch Date</label>
-            <input type="date" id="patchDate"/>
+              <label htmlFor="patchDate">Last Patch Date</label>
+              <input type="date" id="patchDate"/>
 
-            <label htmlFor="updatedBy">Last Updated By</label>
-            <input type="text" id="updatedBy"/>
+              <label htmlFor="updatedBy">Last Updated By</label>
+              <input type="text" id="updatedBy"/>
 
-            <label>Server Type</label>
-            <div className="radios">
-              <input className="radio" type="radio" name="server_type" id="type_1" value="appliance"/>
-              <label className="radio" htmlFor="type_1">Appliance</label>
+              <label>Server Type</label>
+              <div className="radios">
+                <input className="radio" type="radio" name="server_type" id="type_1" value="appliance"/>
+                <label className="radio" htmlFor="type_1">Appliance</label>
 
-              <input className="radio" type="radio" name="server_type" id="type_2" value="server"/>
-              <label className="radio" htmlFor="type_2">Server</label>
-            </div>
+                <input className="radio" type="radio" name="server_type" id="type_2" value="server"/>
+                <label className="radio" htmlFor="type_2">Server</label>
+              </div>
 
-            <label htmlFor="monitoring">Monitoring Configured</label>
-            <input className="checkbox" type="checkbox" id="monitoring"/>
-            <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
+              <label htmlFor="monitoring">Monitoring Configured</label>
+              <input className="checkbox" type="checkbox" id="monitoring"/>
+              <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
-            <label htmlFor="applications_0">Applications</label>
-            <input type="text" id="applications_0"/>
-            <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
-            {this.state.appInputs}
+              <label htmlFor="applications_0">Applications</label>
+              <input type="text" id="applications_0"/>
+              <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
+              {this.state.appInputs}
 
-            <div className="actions">
-              <input className="btn" type="submit" value="Save"/>
-              <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
-            </div>
-          </form>
+              <div className="actions">
+                <input className="btn" type="submit" value="Save"/>
+                <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
+              </div>
+            </form>
+          </fieldset>
         </div>
       </div>
     );

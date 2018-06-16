@@ -74,13 +74,7 @@ servers.post('/', (req, res, next) => {
       return;
     }
 
-    // Duplicate object for response
-    const response = {...newServer}._doc;
-
-    // Remove database keys
-    delete response.__v;
-    delete response._id;
-    res.send(response);
+    res.send(newServer);
   });
 });
 servers.all('/', (req, res, next) => res.set('Allow', 'GET').status(405).end());
