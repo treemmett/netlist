@@ -22,10 +22,18 @@ const serverSchema = mongoose.Schema({
     index: true,
     trim: true
   },
+  serverType: {
+    type: String,
+    enum: ['appliance', 'server'],
+    trim: true
+  },
+  site: {type: String, trim: true},
   updatedBy: {type: String, trim: true},
+  url: {type: String, trim: true},
   virtualization: {
     type: String,
-    enum: ['physical', 'virtual', 'cloud']
+    enum: ['physical', 'virtual', 'cloud'],
+    trim: true
   },
   vlan: {type: String, trim: true}
 });
@@ -62,5 +70,33 @@ servers.post('/', (req, res, next) => {
   });
 });
 servers.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
+
+servers.put('/:serverName', (req, res, next) => {
+  // Update server details
+  Server.findOneAndUpdate({serverName: {$regex: new RegExp(req.params.serverName, "i")}}, req.body, {new: true}, (err, resp) => {
+    if(err){
+      next(err);
+      return;
+    }
+
+    // Check if no data was updated
+    if(!resp){
+      res.status(404).send({
+        error: ['Server "'+req.params.serverName+'" not found.']
+      });
+      return;
+    }
+
+    // Duplicate response from db
+    const data = {...resp}._doc;
+
+    // Remove database specific keys from duplication
+    delete data.__v;
+    delete data._id;
+
+    res.send(data);
+  });
+});
+servers.all('/:serverName', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
 
 module.exports = servers;
