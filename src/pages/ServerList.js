@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import serialize from '../utils/serializer';
 import './ServerList.scss';
 
 // Icons
@@ -134,7 +135,7 @@ class Modal extends Component{
       this.totalApps++;
 
       this.state.appInputs.push(<React.Fragment key={curI}>
-        <input type="text" id={'applications_'+(curI+1)} name={'applications_'+(curI+1)} defaultValue={this.props.data.applications[i]}/>
+        <input type="text" id={'applications_'+(curI+1)} name="applications[]" defaultValue={this.props.data.applications[i]}/>
         <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
       </React.Fragment>);
     }
@@ -150,7 +151,7 @@ class Modal extends Component{
 
     // 
     appInputs.push(<React.Fragment key={curI}>
-      <input type="text" id={'applications_'+(curI+1)} name={'applications_'+(curI+1)}/>
+      <input type="text" id={'applications_'+(curI+1)} name="applications[]"/>
       <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
     </React.Fragment>);
 
@@ -174,47 +175,7 @@ class Modal extends Component{
     // Disable form
     this.setState({disabled: true});
 
-    // Compile data from form
-    const data = {
-      applications: []
-    };
-
-    for(let i of e.target){
-      // Skip buttons and submit
-      if(i.type.match(/button|submit/i)){
-        continue;
-      }
-
-      // Correct parsing for radios
-      if(i.type.match(/radio/i)){
-        if(i.checked){
-          data[i.name] = i.value;
-        }
-
-        continue;
-      }
-
-      // Correct parsing for checkbox
-      if(i.type.match(/checkbox/i)){
-        data[i.id] = i.checked;
-        continue;
-      }
-
-      // Add applictions to separate array
-      if(i.id.match(/^applications_/i)){
-        if(!i.value.trim()){
-          continue;
-        }
-
-        data.applications.push(i.value.trim());
-        continue;
-      }
-
-      // Skip empty fields
-      if(!i.value.trim()) continue;
-
-      data[i.id] = i.value.trim();
-    }
+    const data = serialize(e.target);
 
     if(this.props.data.serverName){
       // Send update request if data is present
@@ -246,28 +207,28 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
               <label htmlFor="serverName">Server Name</label>
-              <input type="text" id="serverName" defaultValue={this.props.data.serverName} autoFocus required/>
+              <input type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} autoFocus required/>
 
               <label htmlFor="dnsName">DNS Name</label>
-              <input type="text" id="dnsName" defaultValue={this.props.data.dnsName}/>
+              <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
 
               <label htmlFor="site">Site</label>
-              <input type="text" id="site" defaultValue={this.props.data.site}/>
+              <input type="text" id="site" name="site" defaultValue={this.props.data.site}/>
 
               <label htmlFor="os">OS</label>
-              <input type="text" id="os" defaultValue={this.props.data.os}/>
+              <input type="text" id="os" name="os" defaultValue={this.props.data.os}/>
 
               <label htmlFor="cpu">CPU</label>
-              <input type="text" id="cpu" defaultValue={this.props.data.cpu}/>
+              <input type="text" id="cpu" name="cpu" defaultValue={this.props.data.cpu}/>
 
               <label htmlFor="memory">Memory</label>
-              <input type="text" id="memory" defaultValue={this.props.data.memory}/>
+              <input type="text" id="memory" name="memory" defaultValue={this.props.data.memory}/>
 
               <label htmlFor="disks">Disks</label>
-              <input type="text" id="disks" defaultValue={this.props.data.disks}/>
+              <input type="text" id="disks" name="disks" defaultValue={this.props.data.disks}/>
 
               <label htmlFor="vlan">VLAN</label>
-              <input type="text" id="vlan" defaultValue={this.props.data.vlan}/>
+              <input type="text" id="vlan" name="vlan" defaultValue={this.props.data.vlan}/>
 
               <label>Virtualization Type</label>
               <div className="radios">
@@ -282,22 +243,22 @@ class Modal extends Component{
               </div>
 
               <label htmlFor="maintWin">Maintenance Window</label>
-              <input type="text" id="maintWin" defaultValue={this.props.data.maintWin}/>
+              <input type="text" id="maintWin" name="maintWin" defaultValue={this.props.data.maintWin}/>
 
               <label htmlFor="owner">Owner</label>
-              <input type="text" id="owner" defaultValue={this.props.data.owner}/>
+              <input type="text" id="owner" name="owner" defaultValue={this.props.data.owner}/>
 
               <label htmlFor="url">Application URL</label>
-              <input type="text" id="url" defaultValue={this.props.data.url}/>
+              <input type="text" id="url" name="url" defaultValue={this.props.data.url}/>
 
               <label htmlFor="backupDate">Last Backup Date</label>
-              <input type="date" id="backupDate" defaultValue={this.props.data.backupDate}/>
+              <input type="date" id="backupDate" name="backupDate" defaultValue={this.props.data.backupDate}/>
 
               <label htmlFor="patchDate">Last Patch Date</label>
-              <input type="date" id="patchDate" defaultValue={this.props.data.patchDate}/>
+              <input type="date" id="patchDate" name="patchDate" defaultValue={this.props.data.patchDate}/>
 
               <label htmlFor="updatedBy">Last Updated By</label>
-              <input type="text" id="updatedBy" defaultValue={this.props.data.updatedBy}/>
+              <input type="text" id="updatedBy" name="updatedBy" defaultValue={this.props.data.updatedBy}/>
 
               <label>Server Type</label>
               <div className="radios">
@@ -309,11 +270,11 @@ class Modal extends Component{
               </div>
 
               <label htmlFor="monitoring">Monitoring Configured</label>
-              <input className="checkbox" type="checkbox" id="monitoring" defaultChecked={this.props.data.monitoring}/>
+              <input className="checkbox" type="checkbox" id="monitoring" name="monitoring" defaultChecked={this.props.data.monitoring}/>
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
-              <label htmlFor="applications_0">Applications</label>
-              <input type="text" id="applications_0" defaultValue={this.props.data.applications[0]}/>
+              <label htmlFor="applications">Applications</label>
+              <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>
               <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
               {this.state.appInputs}
 
