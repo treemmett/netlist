@@ -12,6 +12,7 @@ export default class ServerList extends Component{
     super(props);
     this.state = {
       modal: false,
+      openServer: {},
       data: []
     }
   }
@@ -29,8 +30,16 @@ export default class ServerList extends Component{
     });
   }
 
-  addToData = newData => {
+  addToData = (newData, removeData) => {
+    // Find server
     const data = this.state.data.slice(0);
+
+    // Find and remove data if removeData was received
+    if(removeData){
+      const index = data.findIndex(obj => obj.serverName === removeData);
+      data.splice(index, 1);
+    }
+
     data.push(newData);
     this.setState({data: this.sortServers(data)});
   }
@@ -47,15 +56,20 @@ export default class ServerList extends Component{
     return data;
   }
 
+  openDetails = serverName => {
+    const server = this.state.data.find(obj => obj.serverName === serverName);
+    this.setState({openServer: server, modal: true});
+  }
+
   render(){
     const rows = [];
     while(rows.length < this.state.data.length){
-      rows.push(<Row data={this.state.data[rows.length]} key={rows.length}/>);
+      rows.push(<Row openDetails={this.openDetails} data={this.state.data[rows.length]} key={rows.length}/>);
     }
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal save={this.addToData} close={e => this.setState({modal: false})}/> : null}
+        {this.state.modal ? <Modal data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
@@ -92,7 +106,7 @@ class Row extends Component{
     const data = this.props.data;
 
     return (
-      <tr>
+      <tr onClick={e => this.props.openDetails(data.serverName)}>
         <td>{data.serverName}</td>
         <td>{data.applications.length}</td>
         <td>{data.patchDate}</td>
@@ -121,6 +135,7 @@ class Modal extends Component{
     const curI = this.totalApps;
     this.totalApps++;
 
+    // 
     appInputs.push(<React.Fragment key={curI}>
       <input type="text" id={'applications_'+(curI+1)} name={'applications_'+(curI+1)}/>
       <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
@@ -188,13 +203,25 @@ class Modal extends Component{
       data[i.id] = i.value.trim();
     }
 
-    axios.post('/netlist/api/servers', data).then(res => {
-      // Add new data to table
-      this.props.save(res.data);
-
-      // Close modal
-      this.props.close();
-    });
+    if(this.props.data.serverName){
+      // Send update request if data is present
+      axios.put('/netlist/api/servers/' + encodeURIComponent(this.props.data.serverName.toLowerCase()), data).then(res => {
+        // Add new data to table
+        this.props.save(res.data, this.props.data.serverName);
+  
+        // Close modal
+        this.props.close();
+      });
+    }else{
+      // Create new server otherwise
+      axios.post('/netlist/api/servers', data).then(res => {
+        // Add new data to table
+        this.props.save(res.data);
+  
+        // Close modal
+        this.props.close();
+      });
+    }
   }
 
   render(){
@@ -202,74 +229,74 @@ class Modal extends Component{
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
         <div className="modalCard" onClick={e => e.stopPropagation()}>
           {this.state.disabled ? <div className="spinner"/> : null}
-          <div className="title">New Server</div>
+          <div className="title">{this.props.data.serverName ? this.props.data.serverName : 'New server'}</div>
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
               <label htmlFor="serverName">Server Name</label>
-              <input type="text" id="serverName" autoFocus required/>
+              <input type="text" id="serverName" defaultValue={this.props.data.serverName} autoFocus required/>
 
               <label htmlFor="dnsName">DNS Name</label>
-              <input type="text" id="dnsName"/>
+              <input type="text" id="dnsName" defaultValue={this.props.data.dnsName}/>
 
               <label htmlFor="site">Site</label>
-              <input type="text" id="site"/>
+              <input type="text" id="site" defaultValue={this.props.data.site}/>
 
               <label htmlFor="os">OS</label>
-              <input type="text" id="os"/>
+              <input type="text" id="os" defaultValue={this.props.data.os}/>
 
               <label htmlFor="cpu">CPU</label>
-              <input type="text" id="cpu"/>
+              <input type="text" id="cpu" defaultValue={this.props.data.cpu}/>
 
               <label htmlFor="memory">Memory</label>
-              <input type="text" id="memory"/>
+              <input type="text" id="memory" defaultValue={this.props.data.memory}/>
 
               <label htmlFor="disks">Disks</label>
-              <input type="text" id="disks"/>
+              <input type="text" id="disks" defaultValue={this.props.data.disks}/>
 
               <label htmlFor="vlan">VLAN</label>
-              <input type="text" id="vlan"/>
+              <input type="text" id="vlan" defaultValue={this.props.data.vlan}/>
 
               <label>Virtualization Type</label>
               <div className="radios">
-                <input className="radio" type="radio" name="virtualization" id="virt_1" value="physical"/>
+                <input className="radio" type="radio" name="virtualization" id="virt_1" defaultChecked={this.props.data.virtualization === 'physical'} value="physical"/>
                 <label className="radio" htmlFor="virt_1">Physical</label>
 
-                <input className="radio" type="radio" name="virtualization" id="virt_2" value="virtual"/>
+                <input className="radio" type="radio" name="virtualization" id="virt_2" defaultChecked={this.props.data.virtualization === 'virtual'} value="virtual"/>
                 <label className="radio" htmlFor="virt_2">Virtual</label>
 
-                <input className="radio" type="radio" name="virtualization" id="virt_3" value="cloud"/>
+                <input className="radio" type="radio" name="virtualization" id="virt_3" defaultChecked={this.props.data.virtualization === 'cloud'} value="cloud"/>
                 <label className="radio" htmlFor="virt_3">Cloud</label>
               </div>
 
               <label htmlFor="maintWin">Maintenance Window</label>
-              <input type="text" id="maintWin"/>
+              <input type="text" id="maintWin" defaultValue={this.props.data.maintWin}/>
 
               <label htmlFor="owner">Owner</label>
-              <input type="text" id="owner"/>
+              <input type="text" id="owner" defaultValue={this.props.data.owner}/>
 
               <label htmlFor="url">Application URL</label>
-              <input type="text" id="url"/>
+              <input type="text" id="url" defaultValue={this.props.data.url}/>
 
               <label htmlFor="backupDate">Last Backup Date</label>
-              <input type="date" id="backupDate"/>
+              <input type="date" id="backupDate" defaultValue={this.props.data.backupDate}/>
 
               <label htmlFor="patchDate">Last Patch Date</label>
-              <input type="date" id="patchDate"/>
+              <input type="date" id="patchDate" defaultValue={this.props.data.patchDate}/>
 
               <label htmlFor="updatedBy">Last Updated By</label>
-              <input type="text" id="updatedBy"/>
+              <input type="text" id="updatedBy" defaultValue={this.props.data.updatedBy}/>
 
               <label>Server Type</label>
               <div className="radios">
-                <input className="radio" type="radio" name="server_type" id="type_1" value="appliance"/>
+                <input className="radio" type="radio" name="serverType" id="type_1" defaultChecked={this.props.data.serverType === 'appliance'} value="appliance"/>
                 <label className="radio" htmlFor="type_1">Appliance</label>
 
-                <input className="radio" type="radio" name="server_type" id="type_2" value="server"/>
+                <input className="radio" type="radio" name="serverType" id="type_2" defaultChecked={this.props.data.serverType === 'server'} value="server"/>
                 <label className="radio" htmlFor="type_2">Server</label>
               </div>
 
               <label htmlFor="monitoring">Monitoring Configured</label>
-              <input className="checkbox" type="checkbox" id="monitoring"/>
+              <input className="checkbox" type="checkbox" id="monitoring" defaultChecked={this.props.data.monitoring}/>
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
               <label htmlFor="applications_0">Applications</label>
