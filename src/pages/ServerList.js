@@ -12,7 +12,7 @@ export default class ServerList extends Component{
     super(props);
     this.state = {
       modal: false,
-      openServer: {},
+      openServer: {applications: []},
       data: []
     }
   }
@@ -69,7 +69,7 @@ export default class ServerList extends Component{
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {}})}/> : null}
+        {this.state.modal ? <Modal data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
@@ -125,6 +125,19 @@ class Modal extends Component{
     }
 
     this.totalApps = 0;
+
+    // Add application inputs
+    // We're skipping the first item
+    // because this is handled in the render
+    for(let i = 1; i < this.props.data.applications.length; i++){
+      const curI = this.totalApps;
+      this.totalApps++;
+
+      this.state.appInputs.push(<React.Fragment key={curI}>
+        <input type="text" id={'applications_'+(curI+1)} name={'applications_'+(curI+1)} defaultValue={this.props.data.applications[i]}/>
+        <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
+      </React.Fragment>);
+    }
   }
 
   addApp = e => {
@@ -300,7 +313,7 @@ class Modal extends Component{
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
               <label htmlFor="applications_0">Applications</label>
-              <input type="text" id="applications_0"/>
+              <input type="text" id="applications_0" defaultValue={this.props.data.applications[0]}/>
               <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
               {this.state.appInputs}
 
