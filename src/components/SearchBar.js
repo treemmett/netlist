@@ -22,7 +22,7 @@ export default class extends Component{
   render(){
     return (
       <div className={classNames('searchBar', {open: this.state.open})} onClick={this.open}>
-        <input id="search" type="search" onBlur={this.checkStatus} aria-label="Search"/>
+        <input id="search" type="search" onBlur={this.checkStatus} onChange={this.props.search} aria-label="Search"/>
         <label className="icon" htmlFor="search"><Search/></label>
       </div>
     );

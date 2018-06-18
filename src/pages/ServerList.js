@@ -8,6 +8,7 @@ import './ServerList.scss';
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
+import Sad from '../svg/Sad';
 
 export default class ServerList extends Component{
   constructor(props){
@@ -15,10 +16,11 @@ export default class ServerList extends Component{
     this.state = {
       modal: false,
       openServer: {applications: []},
-      data: []
+      data: [],
+      searchResult: null
     }
   }
-
+ 
   componentDidMount(){
     this.getServers();
   }
@@ -63,10 +65,33 @@ export default class ServerList extends Component{
     this.setState({openServer: server, modal: true});
   }
 
+  search = e => {
+    // Remove search result if value is empty
+    if(!e.target.value){
+      this.setState({searchResult: null});
+      return;
+    }
+
+    // Escape regex sensitive characters
+    const chars = e.target.value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
+    // Create regex from search value
+    const reg = new RegExp(chars, 'i');
+
+    // Find data that matches search result
+    const data = this.state.data.filter(obj => reg.test(obj.serverName));
+
+    this.setState({searchResult: this.sortServers(data)});
+  }
+
   render(){
     const rows = [];
-    while(rows.length < this.state.data.length){
-      rows.push(<Row openDetails={this.openDetails} data={this.state.data[rows.length]} key={rows.length}/>);
+
+    // Show search result, or all data
+    const viewset = this.state.searchResult ? this.state.searchResult : this.state.data;
+
+    while(rows.length < viewset.length){
+      rows.push(<Row openDetails={this.openDetails} data={viewset[rows.length]} key={rows.length}/>);
     }
 
     return (
@@ -75,29 +100,39 @@ export default class ServerList extends Component{
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
-            <SearchBar/>
+            <SearchBar search={this.search}/>
           </div>
-          <div className="table">
-            <div className="tbl-header">
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <thead>
-                  <tr>
-                    <th>Server</th>
-                    <th>Applications</th>
-                    <th>Last Updated</th>
-                    <th>Last Updater</th>
-                  </tr>
-                </thead>
-              </table>
+
+          {(this.state.searchResult && !rows.length) ?
+            <div className="sadFace">
+              <Sad/>
+              <span>No servers found</span>
             </div>
-            <div className="tbl-content">
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <tbody>
-                  {rows}
-                </tbody>
-              </table>
+
+            :
+
+            <div className="table">
+              <div className="tbl-header">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <thead>
+                    <tr>
+                      <th>Server</th>
+                      <th>Applications</th>
+                      <th>Last Updated</th>
+                      <th>Last Updater</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div className="tbl-content">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <tbody>
+                    {rows}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </React.Fragment>
     );
