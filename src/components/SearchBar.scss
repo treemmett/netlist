@@ -1,0 +1,54 @@
+.searchBar{
+  background-color: transparent;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  position: relative;
+  transition: background-color 0.1s linear;
+  will-change: background-color;
+
+  input{
+    height: 100%;
+    width: 0;
+    padding: 0;
+    appearance: none;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    transition: width 0.2s, padding 0.2s;
+    will-change: width, padding;
+  }
+
+  label{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5em;
+    cursor: pointer;
+
+    svg{
+      width: 20px;
+      height: 20px;
+      stroke: #888;
+      transition: stroke 0.1s linear;
+    }
+  }
+
+  &:hover{
+    background-color: rgba(#fff, 0.7);
+  }
+
+  &.open{
+    background-color: #fff;
+
+    input{
+      width: 200px;
+      padding-right: 0.5em;
+    }
+
+    label{
+      cursor: text;
+    }
+  }
+}

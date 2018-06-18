@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import './ServerList.scss';
 
@@ -74,6 +75,7 @@ export default class ServerList extends Component{
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
+            <SearchBar/>
           </div>
           <div className="table">
             <div className="tbl-header">
