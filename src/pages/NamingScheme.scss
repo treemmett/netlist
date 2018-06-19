@@ -42,4 +42,27 @@
       width: 75%;
     }
   }
+
+  .modalCard{
+    width: 20em;
+
+    input, label{
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input + label:not(.checkbox):not(.radio){
+      margin-top: 1em;
+    }
+
+    .actions{
+      margin: 0;
+      margin-top: 1em;
+
+      .btn{
+        width: auto;
+      }
+    }
+  }
 }

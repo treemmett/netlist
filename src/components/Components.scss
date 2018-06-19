@@ -112,14 +112,20 @@ $secondary: #bbb;
 
 fieldset{
   border: none;
+  margin: 0;
+  padding: 0;
 }
 
-form.grid{
-  display: grid;
-  grid-row-gap: 0.5em;
-  grid-column-gap: 0.5em;
-  grid-template-columns: auto 3fr auto;
-  overflow-x: hidden;
+form{
+
+  &.grid{
+    display: grid;
+    grid-row-gap: 0.5em;
+    grid-column-gap: 0.5em;
+    grid-template-columns: auto 3fr auto;
+    overflow-x: hidden;
+    padding: 0 10.5px;
+  }
 
   label:not(.checkbox):not(.radio){
     display: inline-block;
@@ -285,17 +291,17 @@ input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, i
   position: relative;
   border-radius: 0.5em;
   overflow: hidden;
-  background-color: #fff;
-
+  
   table{
     width: 100%;
     table-layout: fixed;
   }
-
+  
   .tbl-title{
     text-align: center;
     position: relative;
     padding: 0.5em 0;
+    background-color: #fff;
 
     & + .tbl-header th{
       height: 30px;
