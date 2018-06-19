@@ -52,6 +52,10 @@
       box-sizing: border-box;
     }
 
+    input:first-of-type{
+      width: auto;
+    }
+
     input + label:not(.checkbox):not(.radio){
       margin-top: 1em;
     }

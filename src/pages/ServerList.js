@@ -27,7 +27,7 @@ export default class ServerList extends Component{
 
   getServers = () => {
     // API call to get all servers
-    axios.get('/netlist/api/servers').then(res => {
+    axios.get('/servers').then(res => {
 
       // Update data in app
       this.setState({data: this.sortServers(res.data)});
@@ -216,7 +216,7 @@ class Modal extends Component{
 
     if(this.props.data.serverName){
       // Send update request if data is present
-      axios.put('/netlist/api/servers/' + encodeURIComponent(this.props.data.serverName.toLowerCase()), data).then(res => {
+      axios.put('/servers/' + encodeURIComponent(this.props.data.serverName.toLowerCase()), data).then(res => {
         // Add new data to table
         this.props.save(res.data, this.props.data.serverName);
   
@@ -225,7 +225,7 @@ class Modal extends Component{
       });
     }else{
       // Create new server otherwise
-      axios.post('/netlist/api/servers', data).then(res => {
+      axios.post('/servers', data).then(res => {
         // Add new data to table
         this.props.save(res.data);
   

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import './NamingScheme.scss';
 import SearchBar from '../components/SearchBar';
+import axios from 'axios';
+import './NamingScheme.scss';
 
 // Vectors
 import PlusCircle from '../svg/PlusCircle';
@@ -24,7 +25,7 @@ export default class extends Component{
         }
       ],
 
-      applications: [
+      purposes: [
         {
           code: 20,
           description: 'Jumpbox'
@@ -64,9 +65,9 @@ export default class extends Component{
       locations.push(<Row key={locations.length} code={i.code} description={i.description}/>);
     }
 
-    const applications = [];
-    for(let i of this.state.applications){
-      applications.push(<Row key={applications.length} code={i.code} description={i.description}/>);
+    const purposes = [];
+    for(let i of this.state.purposes){
+      purposes.push(<Row key={purposes.length} code={i.code} description={i.description}/>);
     }
 
     return (
@@ -100,8 +101,8 @@ export default class extends Component{
 
           <div className="table">
             <div className="tbl-title">
-              <span>Applications</span>
-              <div className="icon click" onClick={() => this.setState({modal: 'applications'})}><PlusCircle/></div>  
+              <span>Purposes</span>
+              <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
             </div>
             <div className="tbl-header">
               <table cellPadding="0" cellSpacing="0" border="0">
@@ -115,7 +116,7 @@ export default class extends Component{
             </div>
             <div className="tbl-content">
               <table cellPadding="0" cellSpacing="0" border="0">
-                <tbody>{applications}</tbody>
+                <tbody>{purposes}</tbody>
               </table>
             </div>
           </div>
@@ -146,21 +147,40 @@ class Modal extends Component{
     // Lock form
     this.setState({disabled: true});
 
-    // Send data to page
-    this.props.save(this.props.field, {code: e.target.elements.code.value.trim(), description: e.target.elements.description.value.trim()});
-    this.props.close();
+    // Send API call
+    axios.post('/'+this.props.field, {
+      code: e.target.elements.code.value.trim(),
+      description: e.target.elements.description.value.trim()
+    }).then(res => {
+      // Send data to page
+      this.props.save(this.props.field, res.data);
+
+      // Close modal
+      this.props.close();
+    });
   }
 
   render(){
+    // Unique settings for fieldsets
+    const config = this.props.field === 'locations' ? {
+      length: 3,
+      description: 'Location',
+      code: 'Prefix'
+    } : {
+      length: 2,
+      description: 'Purpose',
+      code: 'Code'
+    }
+
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
         <div className="modalCard" onClick={e => e.stopPropagation()}>
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save}>
-              <label htmlFor="code">Code</label>
-              <input id="code" name="code" type="text"/>
-              <label htmlFor="description">Description</label>
-              <input id="description" name="description" type="text"/>
+              <label htmlFor="code">{config.code}</label>
+              <input size={config.length} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
+              <label htmlFor="description">{config.description}</label>
+              <input id="description" name="description" type="text" required/>
               <div className="actions">
                 <input className="btn" type="submit" value="Save"/>
                 <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>

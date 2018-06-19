@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 
 // Global styles
 import './index.scss';
@@ -10,6 +11,9 @@ import './components/Components.scss';
 import NamingScheme from './pages/NamingScheme';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
+
+// Configure global API settings
+axios.defaults.baseURL = '/netlist/api';
 
 const Render = () => (
   <Router>
