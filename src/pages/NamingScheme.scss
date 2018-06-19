@@ -1,0 +1,45 @@
+.namingScheme{
+  padding: 1em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .actions{
+    display: flex;
+    flex-shrink: 0;
+    margin-bottom: 0.5rem;
+    height: 2.5em;
+  }
+
+  .tables{
+    display: flex;
+    margin: 0 -0.5em;
+
+    .table{
+      margin: 0 0.5em;
+    }
+    
+    .tbl-title{
+      display: flex;
+      justify-content: center;
+
+      .icon{
+        margin-left: 0.5em;
+        visibility: hidden;
+        
+        &, svg{
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      &:hover .icon{
+        visibility: visible;
+      }
+    }
+
+    td:last-child, th:last-child{
+      width: 75%;
+    }
+  }
+}

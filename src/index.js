@@ -7,7 +7,7 @@ import './index.scss';
 import './components/Components.scss';
 
 // Components
-import App from './App';
+import NamingScheme from './pages/NamingScheme';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
 
@@ -17,8 +17,9 @@ const Render = () => (
       <Sidebar/>
 
       <Switch>
-        <Route exact path="/" component={App}/>
         <Route exact path="/servers" component={ServerList}/>
+
+        <Route exact path="/namescheme" component={NamingScheme}/>
       </Switch>
     </React.Fragment>
   </Router>

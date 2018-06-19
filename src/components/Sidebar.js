@@ -5,8 +5,8 @@ import './Sidebar.scss';
 const Sidebar = props => (
   <div className="sidebar">
     <Link to="/" className="brand">netlist</Link>
-    <NavLink to="/servers" activeClassName="active">Servers</NavLink>
-    <NavLink to="/applications" activeClassName="active">Applications</NavLink>
+    <NavLink to="/servers">Servers</NavLink>
+    <NavLink to="/namescheme">Naming Scheme</NavLink>
   </div>
 );
 
