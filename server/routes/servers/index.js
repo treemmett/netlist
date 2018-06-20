@@ -51,6 +51,10 @@ const serverSchema = mongoose.Schema({
   },
   vlan: {type: String, trim: true}
 });
+serverSchema.pre('findOneAndUpdate', function(next){
+  this.options.runValidators = true;
+  next();
+});
 serverSchema.plugin(uniqueValidator);
 const Server = mongoose.model('Server', serverSchema);
 

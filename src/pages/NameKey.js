@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import SearchBar from '../components/SearchBar';
 import axios from 'axios';
-import './NamingScheme.scss';
+import serialize from '../utils/serializer';
+import './NameKey.scss';
 
 // Vectors
 import PlusCircle from '../svg/PlusCircle';
@@ -12,6 +13,7 @@ export default class extends Component{
     this.state = {
       locations: [],
       purposes: [],
+      openData: [],
       modal: false
     }
   }
@@ -28,13 +30,24 @@ export default class extends Component{
     axios.get('/purposes').then(res => this.setState({purposes: this.sort(res.data)}));
   }
 
-  addData = (field, data) => {
+  addData = (field, data, updatedField) => {
+
     // Duplicate existing state
     const state = this.state[field].slice(0);
+
+    // Find and remove data if updatedField was received
+    if(updatedField){
+      const index = state.findIndex(obj => obj.code === updatedField);
+      state.splice(index, 1);
+    }
 
     state.push(data);
 
     this.setState({[field]: this.sort(state)});
+  }
+
+  open = (field, data) => {
+    this.setState({modal: field, openData: data});
   }
 
   sort = data => {
@@ -50,17 +63,17 @@ export default class extends Component{
   render(){
     const locations = [];
     for(let i of this.state.locations){
-      locations.push(<Row key={locations.length} code={i.code} description={i.description}/>);
+      locations.push(<Row onClick={() => this.open('locations', i)} key={locations.length} code={i.code} description={i.description}/>);
     }
 
     const purposes = [];
     for(let i of this.state.purposes){
-      purposes.push(<Row key={purposes.length} code={i.code} description={i.description}/>);
+      purposes.push(<Row onClick={() => this.open('purposes', i)} key={purposes.length} code={i.code} description={i.description}/>);
     }
 
     return (
       <div className="page namingScheme">
-        {this.state.modal ? <Modal field={this.state.modal} save={this.addData} close={() => this.setState({modal: false})}/> : null}
+        {this.state.modal ? <Modal field={this.state.modal} data={this.state.openData} save={this.addData} close={() => this.setState({modal: false, openData: {}})}/> : null}
         <div className="actions">
           <SearchBar/>
         </div>
@@ -126,20 +139,33 @@ class Modal extends Component{
   save = e => {
     e.preventDefault();
 
+    // Serialize data
+    const data = serialize(e.target);
+
     // Lock form
     this.setState({disabled: true});
 
-    // Send API call
-    axios.post('/'+this.props.field, {
-      code: e.target.elements.code.value.trim(),
-      description: e.target.elements.description.value.trim()
-    }).then(res => {
-      // Send data to page
-      this.props.save(this.props.field, res.data);
+    // Update existing data
+    if(this.props.data.code){
+      axios.put('/'+this.props.field+'/'+this.props.data.code, data).then(res => {
 
-      // Close modal
-      this.props.close();
-    });
+        // Send data to page, remove old field
+        this.props.save(this.props.field, res.data, this.props.data.code);
+  
+        // Close modal
+        this.props.close();
+      });
+    }else{
+      // Send API call to create new field
+      axios.post('/'+this.props.field, data).then(res => {
+
+        // Send data to page
+        this.props.save(this.props.field, res.data);
+
+        // Close modal
+        this.props.close();
+      });
+    }
   }
 
   render(){
@@ -160,9 +186,9 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
+              <input defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
               <label htmlFor="description">{config.description}</label>
-              <input id="description" name="description" type="text" required/>
+              <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">
                 <input className="btn" type="submit" value="Save"/>
                 <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>

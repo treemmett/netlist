@@ -16,6 +16,10 @@ const schema = mongoose.Schema({
     required: true
   }
 });
+schema.pre('findOneAndUpdate', function(next){
+  this.options.runValidators = true;
+  next();
+});
 const Purpose = mongoose.model('Purposes', schema);
 
 purposes.get('/', (req, res, next) => {
@@ -49,5 +53,32 @@ purposes.post('/', (req, res, next) => {
   });
 });
 purposes.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
+
+purposes.put('/:code', (req, res, next) => {
+  Purpose.findOneAndUpdate({code: req.params.code}, {description: req.body.description}, {new: true}, (err, resp) => {
+    if(err){
+      next(err);
+      return;
+    }
+
+    // Check if no data was updated
+    if(!resp){
+      res.status(404).send({
+        error: ['Purpose code "'+req.params.code+'" not found.']
+      });
+      return;
+    }
+
+    // Duplicate response from db
+    const data = {...resp}._doc;
+
+    // Remove database specific keys from response
+    delete data.__v;
+    delete data._id;
+
+    res.send(data);
+  });
+});
+purposes.all('/:code', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
 
 module.exports = purposes;

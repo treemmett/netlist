@@ -248,17 +248,17 @@ form{
     grid-column-start: 1;
     grid-column-end: 3;
   }
-}
 
-input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox{
-  &, &:hover, &:active, &:focus{
-    background-color: #eee;
-    color: #888;
-    cursor: default;
-  }
-
-  svg{
-    stroke: #888;
+  input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox, select:disabled{
+    &, &:hover, &:active, &:focus{
+      background-color: #eee;
+      color: #888;
+      cursor: default;
+    }
+  
+    svg{
+      stroke: #888;
+    }
   }
 }
 

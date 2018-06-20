@@ -195,7 +195,6 @@ class Modal extends Component{
     const curI = this.totalApps;
     this.totalApps++;
 
-    // 
     appInputs.push(<React.Fragment key={curI}>
       <input type="text" id={'applications_'+(curI+1)} name="applications[]"/>
       <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
