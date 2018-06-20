@@ -111,7 +111,7 @@ export default class ServerList extends Component{
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal namingKey={this.state.namingKey} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal namingKey={this.state.namingKey} allData={this.state.data} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
@@ -154,20 +154,14 @@ export default class ServerList extends Component{
   }
 }
 
-class Row extends Component{
-  render(){
-    const data = this.props.data;
-
-    return (
-      <tr onClick={e => this.props.openDetails(data.serverName)}>
-        <td>{data.serverName}</td>
-        <td>{data.applications.length}</td>
-        <td>{data.patchDate}</td>
-        <td>{data.updatedBy}</td>
-      </tr>
-    );
-  }
-}
+const Row = props => (
+  <tr onClick={e => props.openDetails(props.data.serverName)}>
+    <td>{props.data.serverName}</td>
+    <td>{props.data.applications.length}</td>
+    <td>{props.data.patchDate}</td>
+    <td>{props.data.updatedBy}</td>
+  </tr>
+);
 
 class Modal extends Component{
   constructor(props){
@@ -252,6 +246,44 @@ class Modal extends Component{
     }
   }
 
+  findNext = () => {
+    const input = document.getElementById('serverName');
+    // Stop if servername is already filled
+    if(input.value.trim()){
+      return;
+    }
+
+    // Get value of location and purpose
+    const location = document.getElementById('location').value.trim();
+    const purpose = document.getElementById('purpose').value.trim();
+
+    // Stop if location or purpose aren't filled
+    if(!location || !purpose){
+      return;
+    }
+
+    // Start race to find available index
+    const racers = [];
+    for(let i = 1; i < 1000; i++){
+      racers.push(new Promise(resolve => {
+        // Check each item in array for available name
+        const index = i.toString().padStart(3, '0')
+        const regex = new RegExp(location + purpose + index, 'gi');
+        const found = this.props.allData.find(obj => regex.test(obj.serverName));
+
+        if(!found){
+          resolve(i);
+        }
+      }));
+    }
+
+    Promise.race(racers).then(index => {
+      // Set servername to available index
+      index = index.toString().padStart(3, '0');
+      input.value = (location + purpose + index).toUpperCase();
+    })
+  }
+
   render(){
     // Render all locations
     const locations = [<option key="0" value="" disabled/>];
@@ -273,10 +305,10 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
               <label htmlFor="location">Location</label>
-              <select className="select" id="location" name="location" defaultValue={this.props.data.location || ''} required>{locations}</select>
+              <select className="select" id="location" name="location" onChange={this.findNext} defaultValue={this.props.data.location || ''} required>{locations}</select>
               
               <label htmlFor="purpose">Purpose</label>
-              <select className="select" id="purpose" name="purpose" defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
+              <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
 
               <label htmlFor="serverName">Server Name</label>
               <input type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
