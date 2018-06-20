@@ -10,34 +10,22 @@ export default class extends Component{
   constructor(props){
     super(props);
     this.state = {
-      locations: [
-        {
-          code: 'DCA',
-          description: 'Pleasant Grove'
-        },
-        {
-          code: 'DCA',
-          description: 'Pleasant Grove'
-        },
-        {
-          code: 'DEN',
-          description: 'Denver'
-        }
-      ],
-
-      purposes: [
-        {
-          code: 20,
-          description: 'Jumpbox'
-        },
-        {
-          code: 21,
-          description: 'Domain Controller'
-        }
-      ],
-
+      locations: [],
+      purposes: [],
       modal: false
     }
+  }
+
+  componentDidMount(){
+    this.refresh();
+  }
+
+  refresh = () => {
+    // API call for locations
+    axios.get('/locations').then(res => this.setState({locations: this.sort(res.data)}));
+
+    // API call for purposes
+    axios.get('/purposes').then(res => this.setState({purposes: this.sort(res.data)}));
   }
 
   addData = (field, data) => {
@@ -78,11 +66,8 @@ export default class extends Component{
         </div>
         <div className="tables">
           <div className="table">
-            <div className="tbl-title">
-              <span>Locations</span>
-              <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div>
-            </div>
             <div className="tbl-header">
+              <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div>
               <table cellPadding="0" cellSpacing="0" border="0">
                 <thead>
                   <tr>
@@ -100,11 +85,8 @@ export default class extends Component{
           </div>
 
           <div className="table">
-            <div className="tbl-title">
-              <span>Purposes</span>
-              <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
-            </div>
             <div className="tbl-header">
+              <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
               <table cellPadding="0" cellSpacing="0" border="0">
                 <thead>
                   <tr>
@@ -176,9 +158,9 @@ class Modal extends Component{
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
         <div className="modalCard" onClick={e => e.stopPropagation()}>
           <fieldset disabled={this.state.disabled}>
-            <form onSubmit={this.save}>
+            <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input size={config.length} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
+              <input minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
               <label htmlFor="description">{config.description}</label>
               <input id="description" name="description" type="text" required/>
               <div className="actions">

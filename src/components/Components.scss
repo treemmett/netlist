@@ -120,6 +120,7 @@ form{
 
   &.grid{
     display: grid;
+    align-items:center;
     grid-row-gap: 0.5em;
     grid-column-gap: 0.5em;
     grid-template-columns: auto 3fr auto;
@@ -296,16 +297,9 @@ input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, i
     width: 100%;
     table-layout: fixed;
   }
-  
-  .tbl-title{
-    text-align: center;
-    position: relative;
-    padding: 0.5em 0;
-    background-color: #fff;
 
-    & + .tbl-header th{
-      height: 30px;
-    }
+  .tbl-header{
+    position: relative;
   }
 
   .tbl-content{
@@ -327,8 +321,9 @@ input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, i
   }
 
   tr{
-    background-color: #fff;
     position: relative;
+    width: 100%;
+    background-color: #fff;
   }
 
   th{

@@ -18,6 +18,17 @@ const schema = mongoose.Schema({
 });
 const Purpose = mongoose.model('Purposes', schema);
 
+purposes.get('/', (req, res, next) => {
+  // Database call
+  Purpose.find({}, {_id: 0, __v: 0}, (err, data) => {
+    if(err){
+      next(err);
+      return;
+    }
+
+    res.send(data);
+  });
+});
 purposes.post('/', (req, res, next) => {
   // Add purpose to database
   const purpose = new Purpose(req.body);
@@ -37,5 +48,6 @@ purposes.post('/', (req, res, next) => {
     res.send(data);
   });
 });
+purposes.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
 module.exports = purposes;

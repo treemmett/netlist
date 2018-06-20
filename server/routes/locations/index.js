@@ -19,6 +19,17 @@ const schema = mongoose.Schema({
 });
 const Location = mongoose.model('Locations', schema);
 
+locations.get('/', (req, res, next) => {
+  // Database call
+  Location.find({}, {_id: 0, __v: 0}, (err, data) => {
+    if(err){
+      next(err);
+      return;
+    }
+
+    res.send(data);
+  });
+});
 locations.post('/', (req, res, next) => {
   // Add location to database
   const location = new Location(req.body);
@@ -38,5 +49,7 @@ locations.post('/', (req, res, next) => {
     res.send(data);
   });
 });
+locations.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
+
 
 module.exports = locations;

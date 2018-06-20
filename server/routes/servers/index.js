@@ -42,7 +42,7 @@ const Server = mongoose.model('Server', serverSchema);
 
 servers.get('/', (req, res, next) => {
   // Get servers from database
-  Server.find({}, (err, data) => {
+  Server.find({}, {_id: 0, __v: 0}, (err, data) => {
     if(err){
       next(err);
       return;

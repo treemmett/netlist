@@ -17,15 +17,14 @@
 
     .table{
       margin: 0 0.5em;
-    }
-    
-    .tbl-title{
-      display: flex;
-      justify-content: center;
 
       .icon{
-        margin-left: 0.5em;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 1em;
         visibility: hidden;
+        margin: auto;
         
         &, svg{
           width: 20px;
@@ -46,27 +45,14 @@
   .modalCard{
     width: 20em;
 
-    input, label{
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    input:first-of-type{
-      width: auto;
-    }
-
-    input + label:not(.checkbox):not(.radio){
-      margin-top: 1em;
+    form{
+      padding: 0;
     }
 
     .actions{
       margin: 0;
-      margin-top: 1em;
-
-      .btn{
-        width: auto;
-      }
+      grid-column: 2;
+      justify-content: space-around;
     }
   }
 }
