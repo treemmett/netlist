@@ -8,7 +8,7 @@ import './index.scss';
 import './components/Components.scss';
 
 // Components
-import NamingScheme from './pages/NamingScheme';
+import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
 
@@ -23,7 +23,7 @@ const Render = () => (
       <Switch>
         <Route exact path="/servers" component={ServerList}/>
 
-        <Route exact path="/namescheme" component={NamingScheme}/>
+        <Route exact path="/namekey" component={NameKey}/>
       </Switch>
     </React.Fragment>
   </Router>

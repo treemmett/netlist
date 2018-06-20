@@ -6,7 +6,7 @@ const Sidebar = props => (
   <div className="sidebar">
     <Link to="/" className="brand">netlist</Link>
     <NavLink to="/servers">Servers</NavLink>
-    <NavLink to="/namescheme">Naming Scheme</NavLink>
+    <NavLink to="/namekey">Name Key</NavLink>
   </div>
 );
 
