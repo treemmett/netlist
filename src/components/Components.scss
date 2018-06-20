@@ -137,7 +137,8 @@ form{
     text-overflow: ellipsis;
   }
 
-  input[type=text], input[type=date], input[type=number]{
+  input[type=text], input[type=date], input[type=number], select.select{
+    background-color: #fff;
     display: inline-block;
     grid-column: 2;
     padding: 0.3em 0.5em;
@@ -154,10 +155,6 @@ form{
       display: none;
       -webkit-appearance: none;
     }
-  }
-
-  input[type=date]{
-    width: 8.5em;
   }
 
   input[type=checkbox].checkbox{
@@ -188,51 +185,59 @@ form{
     }
   }
 
-  .radios{
-    white-space: nowrap;
+  select.select{
+    height: 30px;
+
+    option:disabled{
+      display: none;
+    }
   }
 
-  input[type=radio].radio{
-    position: fixed;
-    opacity: 0;
-    cursor: default;
-    left: -500%;
-    top: -500%;
+  .radios{
+    white-space: nowrap;
 
-    & + label.radio{
-      display: inline-block;
-      padding: 0.3em 0.5em;
-      text-align: center;
-      user-select: none;
-      border: 1px solid #ccc;
-      border-right: none;
-
-      &:first-of-type{
-        border-radius: 5px 0 0 5px;
+    input[type=radio]{
+      position: fixed;
+      opacity: 0;
+      cursor: default;
+      left: -500%;
+      top: -500%;
+  
+      & + label.radio{
+        display: inline-block;
+        padding: 0.3em 0.5em;
+        text-align: center;
+        user-select: none;
+        border: 1px solid #ccc;
+        border-right: none;
+  
+        &:first-of-type{
+          border-radius: 5px 0 0 5px;
+        }
+  
+        &:last-of-type{
+          border-radius: 0 5px 5px 0;
+          border-right: 1px solid #ccc;
+        }
       }
-
-      &:last-of-type{
-        border-radius: 0 5px 5px 0;
-        border-right: 1px solid #ccc;
+  
+      &:checked + label.radio{
+        background-color: $main;
+        border-color: $main;
+        color: #fff;
+  
+        + * + label{
+          border-left: none;
+          padding-left: calc(0.5em + 1px);
+        }
       }
-    }
-
-    &:checked + label.radio{
-      background-color: $main;
-      border-color: $main;
-      color: #fff;
-
-      + * + label{
-        border-left: none;
-        padding-left: calc(0.5em + 1px);
+  
+      &:checked:disabled + label.radio{
+        background-color: lighten($main, 20%);
+        border-color: lighten($main, 20%);
+        color: #eee;
       }
-    }
-
-    &:checked:disabled + label.radio{
-      background-color: lighten($main, 20%);
-      border-color: lighten($main, 20%);
-      color: #eee;
-    }
+    }  
   }
 
   .icon{

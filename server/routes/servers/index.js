@@ -8,12 +8,26 @@ const serverSchema = mongoose.Schema({
   cpu: {type: String, trim: true},
   disks: {type: String, trim: true},
   dnsName: {type: String, trim: true},
+  location: {
+    type: String,
+    trim: true,
+    required: true,
+    minlength: 3,
+    maxlength: 3
+  },
   maintWin: {type: String, trim: true},
   memory: {type: String, trim: true},
   monitoring: Boolean,
   os: {type: String, trim: true},
   owner: {type: String, trim: true},
   patchDate: {type: String, trim: true},
+  purpose: {
+    type: Number,
+    trim: true,
+    required: true,
+    minlength: 2,
+    maxlength: 2
+  },
   serverName: {
     type: String,
     required: true,

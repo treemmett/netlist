@@ -17,21 +17,36 @@ export default class ServerList extends Component{
       modal: false,
       openServer: {applications: []},
       data: [],
+      namingKey: {locations: [], purposes: []},
       searchResult: null
     }
   }
  
   componentDidMount(){
-    this.getServers();
+    this.refresh();
   }
 
-  getServers = () => {
+  refresh = () => {
     // API call to get all servers
-    axios.get('/servers').then(res => {
+    axios.get('/servers').then(res => this.setState({data: this.sortServers(res.data)}));
 
-      // Update data in app
-      this.setState({data: this.sortServers(res.data)});
-    });
+    // Get updated naming key
+    const requests = [
+      axios.get('/locations'),
+      axios.get('/purposes')
+    ];
+
+    Promise.all(requests).then(res => this.setState({namingKey: {locations: sort(res[0].data), purposes: sort(res[1].data)}}));
+
+    function sort(data){
+      data.sort(((a, b) => {
+        if(a.description.toString().toLowerCase() > b.description.toString().toLowerCase()) return 1;
+        if(a.description.toString().toLowerCase() < b.description.toString().toLowerCase()) return -1;
+        return 0;
+      }));
+  
+      return data;
+    }
   }
 
   addToData = (newData, removeData) => {
@@ -96,7 +111,7 @@ export default class ServerList extends Component{
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal namingKey={this.state.namingKey} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
@@ -214,6 +229,8 @@ class Modal extends Component{
 
     const data = serialize(e.target);
 
+    console.log(data);
+
     if(this.props.data.serverName){
       // Send update request if data is present
       axios.put('/servers/' + encodeURIComponent(this.props.data.serverName.toLowerCase()), data).then(res => {
@@ -236,6 +253,18 @@ class Modal extends Component{
   }
 
   render(){
+    // Render all locations
+    const locations = [<option key="0" value="" disabled/>];
+    for(let i of this.props.namingKey.locations){
+      locations.push(<option key={i.code} value={i.code} label={i.description}/>);
+    }
+
+    // Render all purposes
+    const purposes = [<option key="0" value="" disabled/>];
+    for(let i of this.props.namingKey.purposes){
+      purposes.push(<option key={i.code} value={i.code} label={i.description}/>);
+    }
+
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
         <div className="modalCard" onClick={e => e.stopPropagation()}>
@@ -243,8 +272,14 @@ class Modal extends Component{
           <div className="title">{this.props.data.serverName ? this.props.data.serverName : 'New server'}</div>
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
+              <label htmlFor="location">Location</label>
+              <select className="select" id="location" name="location" defaultValue={this.props.data.location || ''} required>{locations}</select>
+              
+              <label htmlFor="purpose">Purpose</label>
+              <select className="select" id="purpose" name="purpose" defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
+
               <label htmlFor="serverName">Server Name</label>
-              <input type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} autoFocus required/>
+              <input type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
 
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
