@@ -61,7 +61,9 @@ export default class ServerList extends Component{
       data.splice(index, 1);
     }
 
-    data.push(newData);
+    if(newData){
+      data.push(newData);
+    }
     this.setState({data: this.sortServers(data)});
   }
 
@@ -244,6 +246,15 @@ class Modal extends Component{
     });
   }
 
+  delete = () => {
+    if(!window.confirm('Are you sure you want to delete '+this.props.data.serverName+'?')){
+      return;
+    }
+
+    this.props.save(null, this.props.data.serverName);
+    this.props.close();
+  }
+
   findNext = () => {
     const input = document.getElementById('serverName');
     // Stop if servername is already filled
@@ -381,8 +392,9 @@ class Modal extends Component{
               {this.state.appInputs}
 
               <div className="actions">
-                <input className="btn" type="submit" value="Save"/>
                 <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
+                {this.props.data.serverName ? <input onClick={this.delete} className="btn red" type="button" value="Delete"/> : null}
+                <input className="btn" type="submit" value="Save"/>
               </div>
             </form>
           </fieldset>

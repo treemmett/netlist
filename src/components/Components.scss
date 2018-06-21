@@ -64,14 +64,27 @@
   }
 
   &.secondary{
-    background-color: $secondary;
+    background-color: transparent;
+    color: #555;
 
     &:hover{
-      background-color: darken($secondary, 5%);
+      background-color: $fg;
     }
 
     &:active{
-      background-color: darken($secondary, 10%);
+      background-color: darken($fg, 5%);
+    }
+  }
+
+  &.red{
+    background-color: $red;
+    
+    &:hover{
+      background-color: darken($red, 7%);
+    }
+    
+    &:active{
+      background-color: darken($red, 14%);
     }
   }
 

@@ -46,7 +46,9 @@ export default class extends Component{
       state.splice(index, 1);
     }
 
-    state.push(data);
+    if(data){
+      state.push(data);
+    }
 
     this.setState({[field]: this.sort(state)});
   }
@@ -203,6 +205,15 @@ class Modal extends Component{
     });
   }
 
+  delete = () => {
+    if(!window.confirm(`Are you sure you want to delete ${this.props.data.code} - ${this.props.data.description}?`)){
+      return;
+    }
+
+    this.props.save(this.props.field, null, this.props.data.code);
+    this.props.close();
+  }
+
   render(){
     // Unique settings for fieldsets
     const config = this.props.field === 'locations' ? {
@@ -227,8 +238,9 @@ class Modal extends Component{
               <label htmlFor="description">{config.description}</label>
               <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">
-                <input className="btn" type="submit" value="Save"/>
                 <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
+                {this.props.data.code ? <input onClick={this.delete} className="btn red" type="button" value="Delete"/> : null}
+                <input className="btn" type="submit" value="Save"/>
               </div>
             </form>
           </fieldset>
