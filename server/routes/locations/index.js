@@ -56,7 +56,7 @@ locations.post('/', (req, res, next) => {
 locations.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
 locations.put('/:code', (req, res, next) => {
-  Location.findOneAndUpdate({code: {$regex: new RegExp(req.params.code, "i")}}, {description: req.body.description}, {new: true}, (err, resp) => {
+  Location.findOneAndUpdate({code: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, {description: req.body.description}, {new: true}, (err, resp) => {
     if(err){
       next(err);
       return;

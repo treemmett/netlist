@@ -91,7 +91,7 @@ servers.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).e
 
 servers.put('/:serverName', (req, res, next) => {
   // Update server details
-  Server.findOneAndUpdate({serverName: {$regex: new RegExp(req.params.serverName, "i")}}, req.body, {new: true}, (err, resp) => {
+  Server.findOneAndUpdate({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, req.body, {new: true}, (err, resp) => {
     if(err){
       next(err);
       return;
