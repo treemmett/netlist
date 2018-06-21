@@ -87,6 +87,24 @@ servers.post('/', (req, res, next) => {
 });
 servers.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
+servers.delete('/:serverName', (req, res,next) => {
+  // Remove document from collection
+  Server.findOneAndRemove({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, (err, resp) => {
+    if(err){
+      return next(err);
+    }
+
+    // Check if nothing was deleted
+    if(!resp){
+      res.status(404).send({
+        error: ['Server "'+req.params.serverName+'" not found.']
+      });
+      return;
+    }
+
+    res.end();
+  });
+});
 servers.put('/:serverName', (req, res, next) => {
   // Update server details
   Server.findOneAndUpdate({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, req.body, {new: true}, (err, resp) => {
@@ -113,6 +131,6 @@ servers.put('/:serverName', (req, res, next) => {
     res.send(data);
   });
 });
-servers.all('/:serverName', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
+servers.all('/:serverName', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = servers;

@@ -251,8 +251,10 @@ class Modal extends Component{
       return;
     }
 
-    this.props.save(null, this.props.data.serverName);
-    this.props.close();
+    axios.delete('/servers/'+this.props.data.serverName).then(() => {
+      this.props.save(null, this.props.data.serverName);
+      this.props.close();
+    }).catch(axiosErrorHandler);
   }
 
   findNext = () => {
