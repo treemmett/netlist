@@ -1,5 +1,4 @@
-$bg: #333;
-$fg: #eee;
+@import 'colors';
 
 .sidebar{
   flex: 0 15em;
@@ -7,10 +6,9 @@ $fg: #eee;
 
   .brand{
     font-family: 'Raleway', 'Open Sans', monospace;
-    padding-left: 2em;
-    padding-top: 1em;
-    padding-bottom: 0.5em;
+    padding: 1rem 2.5rem;
     font-size: 18px;
+    box-sizing: border-box;
   }
 
   a{
@@ -19,17 +17,31 @@ $fg: #eee;
     font-size: 14px;
     display: flex;
     align-items: center;
-    padding: 1em 2em;
+    padding: 1rem 2.5rem;
     transition: background-color 0.1s linear;
     will-change: background-color;
-    box-sizing: border-box;
+    position: relative;
 
-    &:not(.brand):hover{
-      background-color: darken($bg, 2%);
+    .border{
+      position: absolute;
+      height: calc(100% - 6px);
+      background-color: $main;
+      width: 5px;
+      left: -5px;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
+      transition: left 0.1s ease-in-out;
+      will-change: left;
     }
 
-    &:not(.brand).active{
-      background-color: darken($bg, 4%);
+    &:not(.brand):hover{
+      background-color: darken($bg, 2%)
+    }
+
+    &:not(.brand).active .border{
+      transition-duration: 0.2s;
+      left: 0;
     }
   }
 }
