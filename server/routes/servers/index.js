@@ -1,6 +1,5 @@
 const servers = require('express').Router();
 const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
 
 const serverSchema = mongoose.Schema({
   applications: [{type: String}],
@@ -25,16 +24,16 @@ const serverSchema = mongoose.Schema({
     type: Number,
     trim: true,
     required: true,
-    minlength: 2,
-    maxlength: 2
+    min: 10,
+    max: 99
   },
   serverName: {
     type: String,
     required: true,
     unique: true,
-    uniqueCaseInsensitive: true,
     index: true,
-    trim: true
+    trim: true,
+    uppercase: true,
   },
   serverType: {
     type: String,
@@ -55,7 +54,6 @@ serverSchema.pre('findOneAndUpdate', function(next){
   this.options.runValidators = true;
   next();
 });
-serverSchema.plugin(uniqueValidator);
 const Server = mongoose.model('Server', serverSchema);
 
 servers.get('/', (req, res, next) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
+const errorHandler = require('./errorHandler');
 const app = express();
 
 // Load configuration
@@ -10,7 +11,6 @@ try{
 }catch(e){
   config = require('./config.default.json');
 }
-module.exports.config = config;
 
 // Configure app settings
 app.use(express.json());
@@ -36,5 +36,15 @@ db.once('open', () => {
 
   // Start server once DB is connected
   app.use('/netlist/api', require('./routes'));
+
+  // 404 catch all
+  app.all('*', (req, res, next) => {
+    if(res.headersSent){
+      return next(err)
+    }
+    res.status(404).send({error: ['API endpoint not found']});
+  });
+
+  app.use(errorHandler);
   app.listen(8080, () => console.log('API server listening on port 8080'));  
 });

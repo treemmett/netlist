@@ -5,8 +5,8 @@ const schema = mongoose.Schema({
   code: {
     type: Number,
     trim: true,
-    minlength: 2,
-    maxlength: 2,
+    min: 10,
+    max: 99,
     required: true,
     unique: true
   },
