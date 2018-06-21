@@ -9,7 +9,13 @@ const schema = mongoose.Schema({
     maxlength: 3,
     required: true,
     uppercase: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: function(v){
+        return /^[a-zA-Z]{3}$/.test(v);
+      },
+      message: 'Only A-Z characters are allowed for prefix'
+    }
   },
   description: {
     type: String,

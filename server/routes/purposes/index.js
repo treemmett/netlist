@@ -3,12 +3,17 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
   code: {
-    type: Number,
+    type: String,
     trim: true,
-    min: 10,
-    max: 99,
-    required: true,
-    unique: true
+    minlength: 2,
+    maxlength: 2,
+    unique: true,
+    validate: {
+      validator: v => {
+        return /^\d{2}$/.test(v)
+      },
+      message: 'Code is not a number'
+    }
   },
   description: {
     type: String,

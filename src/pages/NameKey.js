@@ -3,6 +3,7 @@ import SearchBar from '../components/SearchBar';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
 import serialize from '../utils/serializer';
+import { parseTextCapitol, parseNumber } from '../utils/textFormatter';
 import './NameKey.scss';
 
 // Vectors
@@ -172,11 +173,13 @@ class Modal extends Component{
     const config = this.props.field === 'locations' ? {
       length: 3,
       description: 'Location',
-      code: 'Prefix'
+      code: 'Prefix',
+      formatter: parseTextCapitol
     } : {
       length: 2,
       description: 'Purpose',
-      code: 'Code'
+      code: 'Code',
+      formatter: parseNumber
     }
 
     return (
@@ -185,7 +188,7 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
+              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
               <label htmlFor="description">{config.description}</label>
               <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">
