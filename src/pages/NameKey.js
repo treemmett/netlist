@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SearchBar from '../components/SearchBar';
 import axios from 'axios';
+import axiosErrorHandler from '../utils/axiosErrorHandler';
 import serialize from '../utils/serializer';
 import './NameKey.scss';
 
@@ -24,10 +25,10 @@ export default class extends Component{
 
   refresh = () => {
     // API call for locations
-    axios.get('/locations').then(res => this.setState({locations: this.sort(res.data)}));
+    axios.get('/locations').then(res => this.setState({locations: this.sort(res.data)})).catch(axiosErrorHandler);
 
     // API call for purposes
-    axios.get('/purposes').then(res => this.setState({purposes: this.sort(res.data)}));
+    axios.get('/purposes').then(res => this.setState({purposes: this.sort(res.data)})).catch(axiosErrorHandler);
   }
 
   addData = (field, data, updatedField) => {
@@ -145,27 +146,25 @@ class Modal extends Component{
     // Lock form
     this.setState({disabled: true});
 
-    // Update existing data
-    if(this.props.data.code){
-      axios.put('/'+this.props.field+'/'+this.props.data.code, data).then(res => {
+    const update = Boolean(this.props.data.code);
 
-        // Send data to page, remove old field
-        this.props.save(this.props.field, res.data, this.props.data.code);
-  
-        // Close modal
-        this.props.close();
-      });
-    }else{
-      // Send API call to create new field
-      axios.post('/'+this.props.field, data).then(res => {
+    // Send request
+    axios({
+      method: update ? 'PUT' : 'POST',
+      url: update ? '/'+this.props.field+'/'+encodeURIComponent(this.props.data.code.toString().toLowerCase()) : '/'+this.props.field,
+      data: data
+    }).then(res => {
+      // Send data to page, remove old field
+      this.props.save(this.props.field, res.data, this.props.data.code);
 
-        // Send data to page
-        this.props.save(this.props.field, res.data);
+      // Close modal
+      this.props.close();
+    }).catch(err => {
+      // Unlock form
+      this.setState({disabled: false});
 
-        // Close modal
-        this.props.close();
-      });
-    }
+      axiosErrorHandler(err);
+    });
   }
 
   render(){

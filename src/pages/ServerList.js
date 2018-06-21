@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import axiosErrorHandler from '../utils/axiosErrorHandler';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import './ServerList.scss';
@@ -28,7 +29,7 @@ export default class ServerList extends Component{
 
   refresh = () => {
     // API call to get all servers
-    axios.get('/servers').then(res => this.setState({data: this.sortServers(res.data)}));
+    axios.get('/servers').then(res => this.setState({data: this.sortServers(res.data)})).catch(axiosErrorHandler);
 
     // Get updated naming key
     const requests = [
@@ -36,7 +37,7 @@ export default class ServerList extends Component{
       axios.get('/purposes')
     ];
 
-    Promise.all(requests).then(res => this.setState({namingKey: {locations: sort(res[0].data), purposes: sort(res[1].data)}}));
+    Promise.all(requests).then(res => this.setState({namingKey: {locations: sort(res[0].data), purposes: sort(res[1].data)}})).catch(axiosErrorHandler);
 
     function sort(data){
       data.sort(((a, b) => {
@@ -222,27 +223,24 @@ class Modal extends Component{
 
     const data = serialize(e.target);
 
-    console.log(data);
+    const update = Boolean(this.props.data.serverName);
 
-    if(this.props.data.serverName){
-      // Send update request if data is present
-      axios.put('/servers/' + encodeURIComponent(this.props.data.serverName.toLowerCase()), data).then(res => {
-        // Add new data to table
-        this.props.save(res.data, this.props.data.serverName);
+    axios({
+      method: update ? 'PUT' : 'POST',
+      url: update ? '/servers/'+encodeURIComponent(this.props.data.serverName.toLowerCase()) : '/servers',
+      data: data
+    }).then(res => {
+      // Add new data to table
+      this.props.save(res.data, this.props.data.serverName);
   
-        // Close modal
-        this.props.close();
-      });
-    }else{
-      // Create new server otherwise
-      axios.post('/servers', data).then(res => {
-        // Add new data to table
-        this.props.save(res.data);
-  
-        // Close modal
-        this.props.close();
-      });
-    }
+      // Close modal
+      this.props.close();
+    }).catch(err => {
+      // Unlock form
+      this.setState({disabled: false});
+
+      axiosErrorHandler(err);
+    });
   }
 
   findNext = () => {
