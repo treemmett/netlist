@@ -10,9 +10,17 @@ const serverSchema = mongoose.Schema({
   location: {
     type: String,
     trim: true,
-    required: true,
     minlength: 3,
-    maxlength: 3
+    maxlength: 3,
+    required: true,
+    uppercase: true,
+    unique: true,
+    validate: {
+      validator: function(v){
+        return /^[a-zA-Z]{3}$/.test(v);
+      },
+      message: 'Only A-Z characters are allowed for location'
+    }
   },
   maintWin: {type: String, trim: true},
   memory: {type: String, trim: true},
@@ -21,11 +29,17 @@ const serverSchema = mongoose.Schema({
   owner: {type: String, trim: true},
   patchDate: {type: String, trim: true},
   purpose: {
-    type: Number,
+    type: String,
     trim: true,
-    required: true,
-    min: 10,
-    max: 99
+    minlength: 2,
+    maxlength: 2,
+    unique: true,
+    validate: {
+      validator: v => {
+        return /^\d{2}$/.test(v)
+      },
+      message: 'Purpose is not a number'
+    }
   },
   serverName: {
     type: String,
@@ -133,4 +147,7 @@ servers.put('/:serverName', (req, res, next) => {
 });
 servers.all('/:serverName', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
-module.exports = servers;
+module.exports = {
+  route: servers,
+  schema: Server
+}

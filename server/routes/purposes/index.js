@@ -1,5 +1,6 @@
 const purposes = require('express').Router();
 const mongoose = require('mongoose');
+const Server = require('../servers').schema;
 
 const schema = mongoose.Schema({
   code: {
@@ -12,7 +13,7 @@ const schema = mongoose.Schema({
       validator: v => {
         return /^\d{2}$/.test(v)
       },
-      message: 'Code is not a number'
+      message: 'Purpose is not a number'
     }
   },
   description: {
@@ -59,8 +60,39 @@ purposes.post('/', (req, res, next) => {
 });
 purposes.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
+purposes.delete('/:code', (req, res, next) => {
+  // Check if any servers exist with the received code
+  Server.find({purpose: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, (err, data) => {
+    if(err){
+      return next(err);
+    }
+
+    // Throw if any servers are using the recieved code
+    if(data.length > 0){
+      res.status(409).send({error: ['Unable to delete purpose while it\'s in use']});
+      return;
+    }
+
+    // Attempt to delete key
+    Purpose.findOneAndRemove({code: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, (err, resp) => {
+      if(err){
+        return next(err);
+      }
+
+      // Check if nothing was deleted
+      if(!resp){
+        res.status(404).send({
+          error: ['Purpose code "'+req.params.code+'" not found.']
+        });
+        return;
+      }
+
+      res.end();
+    });
+  });
+});
 purposes.put('/:code', (req, res, next) => {
-  Purpose.findOneAndUpdate({code: req.params.code}, {description: req.body.description}, {new: true}, (err, resp) => {
+  Purpose.findOneAndUpdate({code: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, {description: req.body.description}, {new: true}, (err, resp) => {
     if(err){
       next(err);
       return;
@@ -84,6 +116,6 @@ purposes.put('/:code', (req, res, next) => {
     res.send(data);
   });
 });
-purposes.all('/:code', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
+purposes.all('/:code', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = purposes;

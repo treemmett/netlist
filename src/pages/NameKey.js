@@ -210,8 +210,11 @@ class Modal extends Component{
       return;
     }
 
-    this.props.save(this.props.field, null, this.props.data.code);
-    this.props.close();
+    axios.delete(`/${this.props.field}/${this.props.data.code}`).then(() => {
+      this.props.save(this.props.field, null, this.props.data.code);
+      this.props.close();
+    }).catch(axiosErrorHandler);
+
   }
 
   render(){
@@ -234,7 +237,7 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" required/>
+              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" autoFocus required/>
               <label htmlFor="description">{config.description}</label>
               <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">
