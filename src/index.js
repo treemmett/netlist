@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import { Toaster } from './components/Toast';
 
 // Global styles
 import './index.scss';
@@ -25,6 +26,7 @@ const Render = () => (
 
         <Route exact path="/namekey" component={NameKey}/>
       </Switch>
+      <Toaster/>
     </React.Fragment>
   </Router>
 );
