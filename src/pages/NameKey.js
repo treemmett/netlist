@@ -8,6 +8,7 @@ import './NameKey.scss';
 
 // Vectors
 import PlusCircle from '../svg/PlusCircle';
+import Sad from '../svg/Sad';
 
 export default class extends Component{
   constructor(props){
@@ -16,7 +17,9 @@ export default class extends Component{
       locations: [],
       purposes: [],
       openData: [],
-      modal: false
+      modal: false,
+      searchResultL: null,
+      searchResultP: null
     }
   }
 
@@ -62,14 +65,36 @@ export default class extends Component{
     return data;
   }
 
+  search = e => {
+    // Remove search result if value is empty
+    if(!e.target.value){
+      this.setState({searchResultL: null, searchResultP: null});
+      return;
+    }
+
+    // Escape regex sensitive characters
+    const chars = e.target.value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+
+    // Create regex from search value
+    const reg = new RegExp(chars, 'i');
+
+    // Find data that matches search result
+    const locations = this.state.locations.filter(obj => reg.test(obj.code) || reg.test(obj.description));
+    const purposes = this.state.purposes.filter(obj => reg.test(obj.code) || reg.test(obj.description));
+
+    this.setState({searchResultL: locations, searchResultP: purposes});
+  }
+
   render(){
+    const isSearching = Boolean(this.state.searchResultL || this.state.searchResultP);
+    
     const locations = [];
-    for(let i of this.state.locations){
+    for(let i of isSearching ? this.state.searchResultL : this.state.locations){
       locations.push(<Row onClick={() => this.open('locations', i)} key={locations.length} code={i.code} description={i.description}/>);
     }
 
     const purposes = [];
-    for(let i of this.state.purposes){
+    for(let i of isSearching ? this.state.searchResultP : this.state.purposes){
       purposes.push(<Row onClick={() => this.open('purposes', i)} key={purposes.length} code={i.code} description={i.description}/>);
     }
 
@@ -77,47 +102,57 @@ export default class extends Component{
       <div className="page namingScheme">
         {this.state.modal ? <Modal field={this.state.modal} data={this.state.openData} save={this.addData} close={() => this.setState({modal: false, openData: {}})}/> : null}
         <div className="actions">
-          <SearchBar/>
+          <SearchBar search={this.search}/>
         </div>
-        <div className="tables">
-          <div className="table">
-            <div className="tbl-header">
-              <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div>
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <thead>
-                  <tr>
-                    <th>Prefix</th>
-                    <th>Location</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <div className="tbl-content">
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <tbody>{locations}</tbody>
-              </table>
-            </div>
+
+        {(this.state.searchResultL && !locations.length && !purposes.length) ?
+          <div className="sadFace">
+            <Sad/>
+            <span>No results found</span>
           </div>
 
-          <div className="table">
-            <div className="tbl-header">
-              <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Purpose</th>
-                  </tr>
-                </thead>
-              </table>
+          :
+
+          <div className="tables">
+            <div className="table">
+              <div className="tbl-header">
+                <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div>
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <thead>
+                    <tr>
+                      <th>Prefix</th>
+                      <th>Location</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div className="tbl-content">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <tbody>{locations}</tbody>
+                </table>
+              </div>
             </div>
-            <div className="tbl-content">
-              <table cellPadding="0" cellSpacing="0" border="0">
-                <tbody>{purposes}</tbody>
-              </table>
+
+            <div className="table">
+              <div className="tbl-header">
+                <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Purpose</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div className="tbl-content">
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <tbody>{purposes}</tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     );
   }
