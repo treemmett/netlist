@@ -22,7 +22,7 @@ module.exports = function(err, req, res, next){
 
     case 'MongoError':
       if(err.code === 11000){
-        res.status(422).send({error: ['An item with that key already exists']});
+        res.status(409).send({error: ['An item with that name already exists']});
       }else{
         res.status(500).send({error: [err.message]});
       }

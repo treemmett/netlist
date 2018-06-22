@@ -16,14 +16,19 @@ export class Toaster extends Component{
     toaster.add(this.pop);
   }
 
-  pop = (message, options) => {
-    // Duplicate messages
-    const allToasts = this.state.toasts.splice(0);
-
-    const thisToast = (<Toast index={this.count} key={this.count} message={message} remove={this.remove}/>);
-    allToasts.push(thisToast);
-    this.count++;
-    this.setState({toasts: allToasts});
+  pop = message => {
+    if(typeof message === 'string'){
+      const newToast = (<Toast index={this.count} key={this.count} message={message} remove={this.remove}/>);
+      this.count++;
+      this.setState({toasts: [...this.state.toasts, newToast]});
+    }else if(message instanceof Array){
+      const toasts = [];
+      message.forEach(msg => {
+        toasts.push(<Toast index={this.count} key={this.count} message={msg} remove={this.remove}/>);
+        this.count++;
+      });
+      this.setState({toasts: [...this.state.toasts, ...toasts]});
+    }
   }
 
   remove = i => {

@@ -71,7 +71,7 @@ locations.delete('/:code', (req, res, next) => {
 
     // Throw if any servers are using the recieved code
     if(data.length > 0){
-      res.status(409).send({error: ['Unable to delete location while it\'s in use']});
+      res.status(409).send({error: ['Unable to delete a location while it\'s in use']});
       return;
     }
 

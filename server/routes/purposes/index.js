@@ -69,7 +69,7 @@ purposes.delete('/:code', (req, res, next) => {
 
     // Throw if any servers are using the recieved code
     if(data.length > 0){
-      res.status(409).send({error: ['Unable to delete purpose while it\'s in use']});
+      res.status(409).send({error: ['Unable to delete a purpose while it\'s in use']});
       return;
     }
 

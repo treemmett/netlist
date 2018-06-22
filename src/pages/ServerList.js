@@ -3,6 +3,7 @@ import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
+import toast from '../components/Toast';
 import { parseCapitol } from '../utils/textFormatter';
 import './ServerList.scss';
 
@@ -115,7 +116,7 @@ export default class ServerList extends Component{
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal namingKey={this.state.namingKey} allData={this.state.data} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal history={this.props.history} namingKey={this.state.namingKey} allData={this.state.data} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
@@ -188,6 +189,24 @@ class Modal extends Component{
         <input type="text" id={'applications_'+(curI+1)} name="applications[]" defaultValue={this.props.data.applications[i]}/>
         <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
       </React.Fragment>);
+    }
+  }
+
+  componentDidMount(){
+    // Check if purposes and locations are set
+    const errors = [];
+    if(!this.props.namingKey.locations.length){
+      errors.push('Please create a location before adding a server');
+    }
+
+    if(!this.props.namingKey.purposes.length){
+      errors.push('Please create a purpose before adding a server');
+    }
+
+    // Redirect to naming key if keys aren't set
+    if(errors.length){
+      toast(errors);
+      this.props.history.push('/namekey');
     }
   }
 
