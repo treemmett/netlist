@@ -3,7 +3,7 @@ import SearchBar from '../components/SearchBar';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
 import serialize from '../utils/serializer';
-import { parseTextCapitol, parseNumber } from '../utils/textFormatter';
+import parseText from '../utils/parseText';
 import './NameKey.scss';
 
 // Vectors
@@ -220,15 +220,26 @@ class Modal extends Component{
   render(){
     // Unique settings for fieldsets
     const config = this.props.field === 'locations' ? {
-      length: 3,
       description: 'Location',
       code: 'Prefix',
-      formatter: parseTextCapitol
+      formatter: e => {
+        parseText(e, {
+          type: 'text',
+          length: 3,
+          trim: true,
+          uppercase: true
+        });
+      }
     } : {
-      length: 2,
       description: 'Purpose',
       code: 'Code',
-      formatter: parseNumber
+      formatter: e => {
+        parseText(e, {
+          type: 'number',
+          length: 2,
+          trim: true
+        });
+      }
     }
 
     return (
@@ -237,7 +248,7 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} minLength={config.length} maxLength={config.length} id="code" name="code" type="text" autoFocus required/>
+              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} id="code" name="code" type="text" autoFocus required/>
               <label htmlFor="description">{config.description}</label>
               <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">

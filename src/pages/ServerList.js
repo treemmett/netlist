@@ -4,7 +4,7 @@ import axiosErrorHandler from '../utils/axiosErrorHandler';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import toast from '../components/Toast';
-import { parseCapitol } from '../utils/textFormatter';
+import parseText from '../utils/parseText';
 import './ServerList.scss';
 
 // Icons
@@ -341,7 +341,7 @@ class Modal extends Component{
               <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
 
               <label htmlFor="serverName">Server Name</label>
-              <input onChange={parseCapitol} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
+              <input onChange={e => parseText(e, {uppercase: true})} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
 
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
