@@ -14,7 +14,6 @@ const serverSchema = mongoose.Schema({
     maxlength: 3,
     required: true,
     uppercase: true,
-    unique: true,
     validate: {
       validator: function(v){
         return /^[a-zA-Z]{3}$/.test(v);
@@ -33,7 +32,6 @@ const serverSchema = mongoose.Schema({
     trim: true,
     minlength: 2,
     maxlength: 2,
-    unique: true,
     validate: {
       validator: v => {
         return /^\d{2}$/.test(v)

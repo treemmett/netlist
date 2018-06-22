@@ -3,6 +3,9 @@
 .sidebar{
   flex: 0 15em;
   background-color: $bg;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-y: overlay;
 
   .brand{
     font-family: 'Raleway', 'Open Sans', monospace;

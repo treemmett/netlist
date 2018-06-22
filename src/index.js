@@ -9,6 +9,7 @@ import './index.scss';
 import './components/Components.scss';
 
 // Components
+import Console from './pages/Console'
 import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
@@ -22,6 +23,8 @@ const Render = () => (
       <Sidebar/>
 
       <Switch>
+        <Route exact path="/" component={Console}/>
+
         <Route exact path="/servers" component={ServerList}/>
 
         <Route exact path="/namekey" component={NameKey}/>

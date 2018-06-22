@@ -33,6 +33,8 @@
   svg{
     width: 50%;
     height: 50%;
+    max-height: 200px;
+    max-width: 200px;
     fill: darken(#efefef, 15%);
   }
 }
