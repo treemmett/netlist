@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "classnames": "^2.2.6",
     "custom-react-scripts": "^0.2.2",
