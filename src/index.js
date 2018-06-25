@@ -13,6 +13,7 @@ import Console from './pages/Console'
 import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
+import Users from './pages/Users';
 
 // Configure global API settings
 axios.defaults.baseURL = '/netlist/api';
@@ -28,6 +29,8 @@ const Render = () => (
         <Route exact path="/servers" component={ServerList}/>
 
         <Route exact path="/namekey" component={NameKey}/>
+
+        <Route exact path="/users" component={Users}/>
       </Switch>
       <Toaster/>
     </React.Fragment>

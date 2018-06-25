@@ -6,6 +6,7 @@ const Sidebar = props => (
   <div className="sidebar">
     <Link to="/" className="brand">netlist</Link>
     <NavLink to="/servers"><div className="border"/>Servers</NavLink>
+    <NavLink to="/users"><div className="border"/>Users</NavLink>
     <NavLink to="/namekey"><div className="border"/>Name Key</NavLink>
   </div>
 );

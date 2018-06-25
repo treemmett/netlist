@@ -16,10 +16,18 @@ const schema = mongoose.Schema({
   },
   createdAt: {
     type: Number,
-    required: true
+    required: true,
+    default: Math.floor(Date.now() / 1000)
   },
   lastLogin: {
-    type: Number
+    type: Number,
+    required: true,
+    default: 0
+  },
+  admin: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 });
 schema.pre('findOneAndUpdate', function(next){
@@ -59,14 +67,11 @@ users.post('/', (req, res, next) => {
       return next(err);
     }
 
-    // Calculate epoch
-    const epoch = Math.floor(Date.now() / 1000);
-
     // Save user to database
     const user = new User({
       username: req.body.username,
       hash: hash,
-      createdAt: epoch
+      admin: req.body.admin
     });
     user.save(err => {
       if(err){
