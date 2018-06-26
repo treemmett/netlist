@@ -9,7 +9,8 @@ import './index.scss';
 import './components/Components.scss';
 
 // Components
-import Console from './pages/Console'
+import Console from './pages/Console';
+import Login from './pages/Login';
 import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
@@ -31,6 +32,8 @@ const Render = () => (
         <Route exact path="/namekey" component={NameKey}/>
 
         <Route exact path="/users" component={Users}/>
+
+        <Route exact path="/login" component={Login}/>
       </Switch>
       <Toaster/>
     </React.Fragment>
