@@ -43,7 +43,7 @@
   }
 
   .modalCard{
-    width: 20em;
+    width: auto;
 
     form{
       padding: 0;
@@ -51,7 +51,6 @@
 
     .actions{
       margin: 0;
-      // grid-column: 2;
       justify-content: flex-end;
     }
   }

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import SearchBar from '../components/SearchBar';
+import toast from '../components/Toast';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
 import parseTime from '../utils/parseTime';
+import serialize from '../utils/serializer';
 import Check from '../svg/Check';
 import Sad from '../svg/Sad';
 import './Users.scss';
@@ -11,6 +13,8 @@ export default class extends Component{
   constructor(props){
     super(props);
     this.state = {
+      modal: false,
+      currentUser: {},
       users: []
     }
   }
@@ -52,6 +56,11 @@ export default class extends Component{
     this.setState({searchResult: data});
   }
 
+  addData = data => {
+    console.log(data);
+    this.setState({users: this.sort([...this.state.users, data])});
+  }
+
   render(){
     const rows = [];
 
@@ -65,8 +74,9 @@ export default class extends Component{
     return (
       <React.Fragment>
         <div className="users page">
+          {this.state.modal ? <Modal save={this.addData} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
           <div className="actions">
-            <div className="btn">New User</div>
+            <div className="btn" onClick={() => this.setState({modal: true})}>New User</div>
             <SearchBar search={this.search}/>
           </div>
 
@@ -116,3 +126,63 @@ const Row = props => (
     <td>{props.data.admin ? <Check/> : ''}</td>
   </tr>
 );
+
+class Modal extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      disabled: false
+    }
+  }
+
+  save = e => {
+    e.preventDefault();
+
+    // Serialize data
+    const data = serialize(e.target);
+
+    // Check if passwords match
+    if(data.password !== data.password2){
+      toast('Passwords don\'t match');
+      return;
+    }
+
+    // Lock form
+    this.setState({disabled: true});
+
+    axios.post('/users', data).then(res => {
+      this.props.save(res.data);
+      this.props.close();
+    }).catch(err => {
+      this.setState({disabled: false});
+      axiosErrorHandler(err);
+    });
+  }
+
+  render(){
+    return (
+      <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
+        <div className="modalCard" onClick={e => e.stopPropagation()}>
+          <fieldset disabled={this.state.disabled}>
+            <form className="grid" onSubmit={this.save}>
+              <label htmlFor="username">Username</label>
+              <input type="text" id="username" name="username" required autoFocus/>
+              <label htmlFor="password">Password</label>
+              <input type="password" id="password" name="password" required/>
+              <label htmlFor="password2">Confirm Password</label>
+              <input type="password" id="password2" name="password2" required/>
+              <label htmlFor="admin">Admin</label>
+              <input className="checkbox" type="checkbox" id="admin" name="admin"/>
+              <label className="checkbox icon" htmlFor="admin"><Check/></label>
+
+              <div className="actions">
+                <input type="button" className="btn secondary" value="Cancel" onClick={this.props.close}/>
+                <input type="submit" className="btn" value="Save"/>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </div>
+    );
+  }
+}

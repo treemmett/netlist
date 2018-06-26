@@ -1,6 +1,10 @@
 export default function(epoch){
   // @param {Number} Time to parse in seconds from epoch
 
+  if(typeof epoch === 'undefined'){
+    return;
+  }
+
   // Convert time to number
   epoch = Number(epoch, 10);
 

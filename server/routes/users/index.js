@@ -78,7 +78,16 @@ users.post('/', (req, res, next) => {
         return next(err);
       }
 
-      res.end();
+      // Duplicate document, remove db keys
+      const data = {...user}._doc;
+      delete data._id;
+      delete data.__v;
+      delete data.changePassword;
+
+      // Remove hash
+      delete data.hash;
+
+      res.status(200).send(data);
     })
   });
 });
