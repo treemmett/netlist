@@ -93,4 +93,7 @@ users.post('/', (req, res, next) => {
 });
 users.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
-module.exports = users;
+module.exports = {
+  route: users,
+  schema: User
+};

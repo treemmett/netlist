@@ -18,6 +18,13 @@ import Users from './pages/Users';
 
 // Configure global API settings
 axios.defaults.baseURL = '/netlist/api';
+axios.interceptors.response.use(response => {
+  // Cache auth token
+  if(response.headers['x-auth-token']){
+    localStorage.setItem('authtoken', response.headers['x-auth-token'])
+  }
+  return response;
+});
 
 const Render = () => (
   <Router>
