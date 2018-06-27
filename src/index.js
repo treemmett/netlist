@@ -5,6 +5,8 @@ import axios from 'axios';
 import history from './utils/history';
 import jwt from 'jsonwebtoken';
 import toast, { Toaster } from './components/Toast';
+import { Provider, connect } from 'react-redux';
+import store from './redux/store';
 
 // Global styles
 import './index.scss';
@@ -49,6 +51,7 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
+@connect()
 class PrivateRoute extends React.Component{
   constructor(){
     super();
@@ -76,7 +79,18 @@ class PrivateRoute extends React.Component{
     }
   }
 
+  getData = () => {
+    // Making API calls once authenticated
+    if(this.tokenValid){
+      this.props.dispatch({
+        type: 'GET_SERVERS',
+        payload: axios.get('/servers')
+      });
+    }
+  }
+
   render(){
+    this.getData();
     return this.tokenValid
       ?
       <React.Fragment>
@@ -105,4 +119,4 @@ const Render = () => (
   </Router>
 );
 
-ReactDOM.render(<Render/>, document.getElementById('root'));
+ReactDOM.render(<Provider store={store}><Render/></Provider>, document.getElementById('root'));

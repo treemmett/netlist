@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
+import { connect } from 'react-redux';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import toast from '../components/Toast';
@@ -13,6 +14,11 @@ import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
 import Sad from '../svg/Sad';
 
+@connect(store => {
+  return {
+    servers: store.servers
+  }
+})
 export default class ServerList extends Component{
   constructor(props){
     super(props);
@@ -105,6 +111,7 @@ export default class ServerList extends Component{
   }
 
   render(){
+    console.log(this.props.servers);
     const rows = [];
 
     // Show search result, or all data
