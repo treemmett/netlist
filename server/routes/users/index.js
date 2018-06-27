@@ -158,3 +158,27 @@ module.exports = {
   route: users,
   schema: User
 };
+
+// Setup default user on start if none exist
+User.find({}, {_id: 0, __v: 0, hash: 0}, (err, data) => {
+  if(err){
+    throw err;
+  }
+
+  if(!data.length){
+    const hash = bcrypt.hashSync('password', 10);
+    console.log(hash);
+
+    const god = new User({
+      username: 'god',
+      createdBy: 'god',
+      hash: hash,
+      admin: true
+    });
+    god.save(err => {
+      if(err){
+        throw err;
+      }
+    });
+  }
+});
