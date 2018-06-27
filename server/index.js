@@ -1,4 +1,5 @@
 const express = require('express');
+const expJwt = require('express-jwt');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const errorHandler = require('./errorHandler');
@@ -25,6 +26,15 @@ app.use((req, res, next) => {
   res.removeHeader('X-Powered-By');
   next();
 });
+
+// Require a valid token
+app.use(expJwt({
+  secret: config.token.secret
+}).unless({
+  path: [
+    /\/api\/auth\/?$/
+  ]
+}));
 
 // Connect to database
 const url = 'mongodb://'+config.database.host+':'+config.database.port+'/'+config.database.db;

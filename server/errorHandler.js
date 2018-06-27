@@ -28,6 +28,10 @@ module.exports = function(err, req, res, next){
       }
       break;
 
+    case 'UnauthorizedError':
+      res.status(401).send({error: ['Invalid Token. Please login.']});
+      break;
+
     default:
       res.status(500).send({error: ['Something went wrong. Please try again later.']});
       break;

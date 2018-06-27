@@ -20,6 +20,13 @@ import Users from './pages/Users';
 
 // Configure global API settings
 axios.defaults.baseURL = '/netlist/api';
+axios.interceptors.request.use(request => {
+  // Add authorization token to all requests
+  if(localStorage.authToken){
+    request.headers.Authorization = `Bearer ${localStorage.authToken}`
+  }
+  return request;
+});
 axios.interceptors.response.use(response => {
   // Cache auth token
   if(response.headers['x-auth-token']){
@@ -27,32 +34,57 @@ axios.interceptors.response.use(response => {
   }
   return response;
 });
+axios.interceptors.response.use(null, error => {
+  if(error.response.status === 401){
+    if(!/\/login\/?$/i.test(history.location.pathname)){
+      history.push('/login');
+    }else if(!/\/api\/auth\/?$/i.test(error.response.request.responseURL)){
+      // Remove additional 401 errors if we're not authenticating,
+      // this prevents multiple "Invalid Token" error messages
+      delete error.response.data.error;
+    }
+  } 
 
-const PrivateRoute = props => {
-  let tokenValid = false;
+  return Promise.reject(error);
+});
 
-  // Check if token exists
-  if(localStorage.authToken){
-    const token = jwt.decode(localStorage.authToken);
-    const epoch = Math.floor(Date.now() / 1000);
-
-    // Check if token is still valid and not expired
-    tokenValid = token.exp > epoch;
+class PrivateRoute extends React.Component{
+  constructor(){
+    super();
+    this.checkToken();
   }
 
-  if(!tokenValid){
-    toast('Session expired. Please login');
+  componentWillUpdate(){
+    this.checkToken();
   }
+
+  checkToken = () => {
+    this.tokenValid = false;
+    if(localStorage.authToken){
+      const token = jwt.decode(localStorage.authToken);
+      const epoch = Math.floor(Date.now() / 1000);
   
+      // Check if token is still valid and not expired
+      if(token){
+        this.tokenValid = token.exp > epoch;
+      }
+    }
 
-  return tokenValid
-    ?
-    <React.Fragment>
-      <Sidebar/>
-      <Route {...props}/>
-    </React.Fragment>
-    :
-    <Redirect to={{pathname: '/login', state: {referrer: props.path}}}/>
+    if(!this.tokenValid){
+      toast('Invalid token. Please login.');
+    }
+  }
+
+  render(){
+    return this.tokenValid
+      ?
+      <React.Fragment>
+        <Sidebar/>
+        <Route {...this.props}/>
+      </React.Fragment>
+      :
+      <Redirect to={{pathname: '/login', state: {referrer: this.props.path}}}/>
+  }
 }
 
 const Render = () => (
