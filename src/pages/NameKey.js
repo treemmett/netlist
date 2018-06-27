@@ -210,7 +210,7 @@ class Modal extends Component{
       return;
     }
 
-    axios.delete(`/${this.props.field}/${this.props.data.code}`).then(() => {
+    axios.delete(`/${this.props.field}/${encodeURIComponent(this.props.data.code)}`).then(() => {
       this.props.save(this.props.field, null, this.props.data.code);
       this.props.close();
     }).catch(axiosErrorHandler);

@@ -175,6 +175,17 @@ class Modal extends Component{
     });
   }
 
+  delete = () => {
+    if(!window.confirm('Are you sure you want to delete '+this.props.currentUser.username+'?')){
+      return;
+    }
+
+    axios.delete('/users/'+encodeURIComponent(this.props.currentUser.username.toLowerCase())).then(() => {
+      this.props.save(null, this.props.currentUser);
+      this.props.close();
+    }).catch(axiosErrorHandler);
+  }
+
   render(){
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
@@ -190,9 +201,9 @@ class Modal extends Component{
               <label htmlFor="admin">Admin</label>
               <input defaultChecked={this.props.currentUser.admin} className="checkbox" type="checkbox" id="admin" name="admin"/>
               <label className="checkbox icon" htmlFor="admin"><Check/></label>
-
               <div className="actions">
                 <input type="button" className="btn secondary" value="Cancel" onClick={this.props.close}/>
+                {this.props.currentUser.username ? <input type="button" className="btn red" value="Delete" onClick={this.delete}/> : null}
                 <input type="submit" className="btn" value="Save"/>
               </div>
             </form>

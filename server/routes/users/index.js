@@ -97,6 +97,23 @@ users.post('/', (req, res, next) => {
 });
 users.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
+users.delete('/:username', (req, res, next) => {
+  User.findOneAndRemove({username: {$regex: new RegExp('^'+req.params.username+'$', 'i')}}, (err, resp) => {
+    if(err){
+      return next(err);
+    }
+
+    // Check if nothing was deleted
+    if(!resp){
+      res.status(404).send({
+        error: ['User "'+req.params.username+'" not found.']
+      });
+      return;
+    }
+
+    res.end();
+  });
+});
 users.put('/:username', (req, res, next) => {
   // Hash password if received
   if(req.body.password){
@@ -135,7 +152,7 @@ users.put('/:username', (req, res, next) => {
     });
   }
 });
-users.all('/:username', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
+users.all('/:username', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = {
   route: users,
