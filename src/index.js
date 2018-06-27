@@ -13,6 +13,7 @@ import './components/Components.scss';
 // Components
 import Console from './pages/Console';
 import Login from './pages/Login';
+import Logout from './pages/Logout';
 import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Sidebar from './components/Sidebar';
@@ -97,6 +98,7 @@ const Render = () => (
         <PrivateRoute exact path="/users" component={Users}/>
 
         <Route exact path="/login" component={Login}/>
+        <Route exact path="/logout" component={Logout}/>
       </Switch>
       <Toaster/>
     </React.Fragment>

@@ -8,6 +8,9 @@ const Sidebar = props => (
     <NavLink to="/servers"><div className="border"/>Servers</NavLink>
     <NavLink to="/users"><div className="border"/>Users</NavLink>
     <NavLink to="/namekey"><div className="border"/>Name Key</NavLink>
+    <div className="options">
+      <Link to="/logout">Logout</Link>
+    </div>
   </div>
 );
 
