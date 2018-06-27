@@ -19,7 +19,7 @@ auth.post('/', (req, res, next) => {
     }
 
     // Throw if user doesn't exist
-    if(!data){
+    if(!data || !req.body.password){
       res.status(401).send({error: ['Username or password is incorrect']});
       return;
     }

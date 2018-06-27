@@ -30,7 +30,6 @@ const schema = mongoose.Schema({
   },
   admin: {
     type: Boolean,
-    required: true,
     default: false
   }
 });
@@ -97,6 +96,46 @@ users.post('/', (req, res, next) => {
   });
 });
 users.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
+
+users.put('/:username', (req, res, next) => {
+  // Hash password if received
+  if(req.body.password){
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+      if(err){
+        return next(err);
+      }
+
+      save(hash);
+    });
+  }else{
+    save();
+  }
+
+  function save(hash){
+    const dataToUpdate = {
+      admin: req.body.admin === true
+    }
+
+    if(hash){
+      dataToUpdate.hash = hash;
+    }
+
+    User.findOneAndUpdate({username: {$regex: new RegExp('^'+req.params.username+'$', 'i')}}, dataToUpdate, {new: true}, (err, resp) => {
+      if(err){
+        return next(err);
+      }
+
+      // Remove hash, id, and version
+      const data = {...resp}._doc;
+      delete data.hash;
+      delete data._id;
+      delete data.__v;
+
+      res.send(data);
+    });
+  }
+});
+users.all('/:username', (req, res, next) => res.set('Allow', 'PUT').status(405).end());
 
 module.exports = {
   route: users,

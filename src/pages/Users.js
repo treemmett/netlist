@@ -56,8 +56,19 @@ export default class extends Component{
     this.setState({searchResult: data});
   }
 
-  addData = data => {
-    this.setState({users: this.sort([...this.state.users, data])});
+  addData = (dataToAdd, userToDelete) => {
+    const data = [...this.state.users];
+
+    if(userToDelete){
+      const index = data.findIndex(obj => obj.username === userToDelete);
+      data.splice(index, 1);
+    }
+
+    if(dataToAdd){
+      data.push(dataToAdd);
+    }
+
+    this.setState({users: this.sort(data)});
   }
 
   render(){
@@ -67,13 +78,14 @@ export default class extends Component{
     const viewset = this.state.searchResult ? this.state.searchResult : this.state.users;
 
     while(rows.length < viewset.length){
-      rows.push(<Row openDetails={this.openDetails} data={viewset[rows.length]} key={rows.length}/>);
+      const data = viewset[rows.length];
+      rows.push(<Row open={() => this.setState({modal: true, currentUser: data})} data={data} key={rows.length}/>);
     }
 
     return (
       <React.Fragment>
         <div className="users page">
-          {this.state.modal ? <Modal save={this.addData} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
+          {this.state.modal ? <Modal save={this.addData} currentUser={this.state.currentUser} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
           <div className="actions">
             <div className="btn" onClick={() => this.setState({modal: true})}>New User</div>
             <SearchBar search={this.search}/>
@@ -117,7 +129,7 @@ export default class extends Component{
 }
 
 const Row = props => (
-  <tr>
+  <tr onClick={props.open}>
     <td>{props.data.username}</td>
     <td>{parseTime(props.data.lastLogin)}</td>
     <td>{parseTime(props.data.createdAt)}</td>
@@ -149,8 +161,13 @@ class Modal extends Component{
     // Lock form
     this.setState({disabled: true});
 
-    axios.post('/users', data).then(res => {
-      this.props.save(res.data);
+    const update = Boolean(this.props.currentUser.username);
+    axios({
+      method: update ? 'PUT' : 'POST',
+      url: '/users' + (update ? '/'+encodeURIComponent(this.props.currentUser.username.toLowerCase()) : ''),
+      data: data
+    }).then(res => {
+      this.props.save(res.data, this.props.currentUser.username);
       this.props.close();
     }).catch(err => {
       this.setState({disabled: false});
@@ -165,13 +182,13 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="username">Username</label>
-              <input type="text" id="username" name="username" required autoFocus/>
+              <input value={this.props.currentUser.username} readOnly={this.props.currentUser.username} type="text" id="username" name="username" required autoFocus/>
               <label htmlFor="password">Password</label>
-              <input type="password" id="password" name="password" required/>
+              <input type="password" id="password" name="password" required={!this.props.currentUser.username}/>
               <label htmlFor="password2">Confirm Password</label>
-              <input type="password" id="password2" name="password2" required/>
+              <input type="password" id="password2" name="password2" required={!this.props.currentUser.username}/>
               <label htmlFor="admin">Admin</label>
-              <input className="checkbox" type="checkbox" id="admin" name="admin"/>
+              <input defaultChecked={this.props.currentUser.admin} className="checkbox" type="checkbox" id="admin" name="admin"/>
               <label className="checkbox icon" htmlFor="admin"><Check/></label>
 
               <div className="actions">

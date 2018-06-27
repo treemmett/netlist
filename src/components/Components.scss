@@ -281,10 +281,11 @@ form{
     grid-column-end: 3;
   }
 
-  input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox, select:disabled{
+  input:disabled, input:read-only, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox, select:disabled{
     &, &:hover, &:active, &:focus{
       background-color: #eee;
       color: #888;
+      border-color: #ccc;
       cursor: default;
     }
   
