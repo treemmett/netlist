@@ -19,6 +19,10 @@ const schema = mongoose.Schema({
     required: true,
     default: Math.floor(Date.now() / 1000)
   },
+  createdBy: {
+    type: String,
+    trim: true
+  },
   lastLogin: {
     type: Number,
     required: true,
@@ -71,7 +75,8 @@ users.post('/', (req, res, next) => {
     const user = new User({
       username: req.body.username,
       hash: hash,
-      admin: req.body.admin
+      admin: req.body.admin,
+      createdBy: req.user.username
     });
     user.save(err => {
       if(err){

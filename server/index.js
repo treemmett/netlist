@@ -36,6 +36,17 @@ app.use(expJwt({
   ]
 }));
 
+app.use((req, res, next) => {
+  // Check if a non admin is trying to make a modification
+  if(req.user){
+    if(!req.user.admin && req.method !== 'GET'){
+      res.status(403).send({error: ['You do not have permission to modify the requested resource']});
+      return;
+    }
+  }
+  next();
+});
+
 // Connect to database
 const url = 'mongodb://'+config.database.host+':'+config.database.port+'/'+config.database.db;
 mongoose.connect(url);

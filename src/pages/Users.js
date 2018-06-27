@@ -57,7 +57,6 @@ export default class extends Component{
   }
 
   addData = data => {
-    console.log(data);
     this.setState({users: this.sort([...this.state.users, data])});
   }
 
