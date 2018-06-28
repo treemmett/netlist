@@ -1,10 +1,9 @@
-import { Redirect, Router, Route, Switch } from 'react-router-dom';
+import { Redirect, BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import history from './utils/history';
 import jwt from 'jsonwebtoken';
-import toast, { Toaster } from './components/Toast';
+import { Toaster } from './components/Toast';
 import { Provider, connect } from 'react-redux';
 import store from './redux/store';
 
@@ -25,22 +24,31 @@ import Users from './pages/Users';
 axios.defaults.baseURL = '/netlist/api';
 axios.interceptors.request.use(request => {
   // Add authorization token to all requests
-  if(localStorage.authToken){
-    request.headers.Authorization = `Bearer ${localStorage.authToken}`
+  if(store.getState().login.token){
+    request.headers.Authorization = `Bearer ${store.getState().login.token}`
   }
   return request;
 });
 axios.interceptors.response.use(response => {
-  // Cache auth token
   if(response.headers['x-auth-token']){
-    localStorage.setItem('authToken', response.headers['x-auth-token'])
+    // Send token data to store
+    store.dispatch({
+      type: 'SET_LOGIN',
+      payload: {
+        ...jwt.decode(response.headers['x-auth-token']),
+        token: response.headers['x-auth-token']
+      }
+    });
   }
   return response;
 });
 axios.interceptors.response.use(null, error => {
   if(error.response.status === 401){
-    if(!/\/login\/?$/i.test(history.location.pathname)){
-      history.push('/login');
+    if(!/\/login\/?$/i.test(window.location.pathname)){
+      //Remove login data
+      store.dispatch({
+        type: 'RESET_LOGIN'
+      });
     }else if(!/\/api\/auth\/?$/i.test(error.response.request.responseURL)){
       // Remove additional 401 errors if we're not authenticating,
       // this prevents multiple "Invalid Token" error messages
@@ -51,59 +59,36 @@ axios.interceptors.response.use(null, error => {
   return Promise.reject(error);
 });
 
-@connect()
+@connect(store => {
+  return {
+    loggedIn: store.login.loggedIn,
+    tokenExp: store.login.expires
+  }
+})
 class PrivateRoute extends React.Component{
-  constructor(){
-    super();
-    this.checkToken();
-  }
-
-  componentWillUpdate(){
-    this.checkToken();
-  }
-
-  checkToken = () => {
-    this.tokenValid = false;
-    if(localStorage.authToken){
-      const token = jwt.decode(localStorage.authToken);
-      const epoch = Math.floor(Date.now() / 1000);
-  
-      // Check if token is still valid and not expired
-      if(token){
-        this.tokenValid = token.exp > epoch;
-      }
-    }
-
-    if(!this.tokenValid){
-      toast('Invalid token. Please login.');
+  componentWillUpdate(props){
+    // Check token expiration
+    const time = Math.floor(Date.now() / 1000);
+    if(this.props.tokenExp && time > props.tokenExp){
+      this.props.dispatch({type: 'RESET_LOGIN'});
     }
   }
-
-  getData = () => {
-    // Making API calls once authenticated
-    if(this.tokenValid){
-      this.props.dispatch({
-        type: 'GET_SERVERS',
-        payload: axios.get('/servers')
-      });
-    }
-  }
-
   render(){
-    this.getData();
-    return this.tokenValid
-      ?
+    return this.props.loggedIn ?
       <React.Fragment>
         <Sidebar/>
-        <Route {...this.props}/>
+        <Route exact={this.props.exact} path={this.props.path} component={this.props.component}/>
       </React.Fragment>
       :
-      <Redirect to={{pathname: '/login', state: {referrer: this.props.path}}}/>
+      <Redirect to={{
+        pathname: '/login',
+        state: {referrer: this.props.path}
+      }}/>
   }
 }
 
 const Render = () => (
-  <Router history={history}>
+  <Router>
     <React.Fragment>
       <Switch>
         <PrivateRoute exact path="/" component={Console}/>

@@ -2,9 +2,9 @@ import { combineReducers } from 'redux';
 
 // Reducer files
 import serverData from './serverData';
-import user from './user';
+import login from './login';
 
 export default combineReducers({
-  user: user,
+  login: login,
   servers: serverData
 });

@@ -19,13 +19,7 @@ export default class extends Component{
 
     // Send login request
     axios.post('/auth', data).then(res => {
-      if(this.props.location.state && this.props.location.state.referrer){
-        // Redirect to last site if referrer exists
-        this.props.history.push(this.props.location.state.referrer);
-      }else{
-        // Otherwise, direct to root
-        this.props.history.push('/');
-      }
+      this.props.history.push('/');
     }).catch(err => {
       this.setState({disabled: false});
       axiosErrorHandler(err);
