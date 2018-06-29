@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from'react-redux';
 import SearchBar from '../components/SearchBar';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
@@ -10,67 +11,29 @@ import './NameKey.scss';
 import PlusCircle from '../svg/PlusCircle';
 import Sad from '../svg/Sad';
 
+@connect(store => {
+  return {
+    locations: store.locations.data,
+    purposes: store.purposes.data
+  }
+})
 export default class extends Component{
   constructor(props){
     super(props);
     this.state = {
-      locations: [],
-      purposes: [],
       openData: [],
       modal: false,
-      searchResultL: null,
-      searchResultP: null
     }
-  }
-
-  componentDidMount(){
-    this.refresh();
-  }
-
-  refresh = () => {
-    // API call for locations
-    axios.get('/locations').then(res => this.setState({locations: this.sort(res.data)})).catch(axiosErrorHandler);
-
-    // API call for purposes
-    axios.get('/purposes').then(res => this.setState({purposes: this.sort(res.data)})).catch(axiosErrorHandler);
-  }
-
-  addData = (field, data, updatedField) => {
-
-    // Duplicate existing state
-    const state = this.state[field].slice(0);
-
-    // Find and remove data if updatedField was received
-    if(updatedField){
-      const index = state.findIndex(obj => obj.code === updatedField);
-      state.splice(index, 1);
-    }
-
-    if(data){
-      state.push(data);
-    }
-
-    this.setState({[field]: this.sort(state)});
   }
 
   open = (field, data) => {
     this.setState({modal: field, openData: data});
   }
 
-  sort = data => {
-    data.sort(((a, b) => {
-      if(a.code.toString().toLowerCase() > b.code.toString().toLowerCase()) return 1;
-      if(a.code.toString().toLowerCase() < b.code.toString().toLowerCase()) return -1;
-      return 0;
-    }));
-
-    return data;
-  }
-
   search = e => {
     // Remove search result if value is empty
     if(!e.target.value){
-      this.setState({searchResultL: null, searchResultP: null});
+      this.setState({search: null});
       return;
     }
 
@@ -80,34 +43,45 @@ export default class extends Component{
     // Create regex from search value
     const reg = new RegExp(chars, 'i');
 
-    // Find data that matches search result
-    const locations = this.state.locations.filter(obj => reg.test(obj.code) || reg.test(obj.description));
-    const purposes = this.state.purposes.filter(obj => reg.test(obj.code) || reg.test(obj.description));
-
-    this.setState({searchResultL: locations, searchResultP: purposes});
+    // Send regex to renderer
+    this.setState({search: reg});
   }
 
   render(){
-    const isSearching = Boolean(this.state.searchResultL || this.state.searchResultP);
-    
-    const locations = [];
-    for(let i of isSearching ? this.state.searchResultL : this.state.locations){
-      locations.push(<Row onClick={() => this.open('locations', i)} key={locations.length} code={i.code} description={i.description}/>);
-    }
+    const mappedLocations = this.props.locations.filter(obj => {
+      // Apply search
+      return !this.state.search || this.state.search.test(obj.code) || this.state.search.test(obj.description);
+    }).sort(((a, b) => {
+      // Sort by code
+      if(a.code.toString().toLowerCase() > b.code.toString().toLowerCase()) return 1;
+      if(a.code.toString().toLowerCase() < b.code.toString().toLowerCase()) return -1;
+      return 0;
+    })).map((obj) => {
+      // Render item
+      return <Row onClick={() => this.open('locations', obj)} key={obj.code} code={obj.code} description={obj.description}/>;
+    });
 
-    const purposes = [];
-    for(let i of isSearching ? this.state.searchResultP : this.state.purposes){
-      purposes.push(<Row onClick={() => this.open('purposes', i)} key={purposes.length} code={i.code} description={i.description}/>);
-    }
+    const mappedPurposes = this.props.purposes.filter(obj => {
+      // Apply search
+      return !this.state.search || this.state.search.test(obj.code) || this.state.search.test(obj.description);
+    }).sort(((a, b) => {
+      // Sort by code
+      if(a.code.toString().toLowerCase() > b.code.toString().toLowerCase()) return 1;
+      if(a.code.toString().toLowerCase() < b.code.toString().toLowerCase()) return -1;
+      return 0;
+    })).map((obj) => {
+      // Render item
+      return <Row onClick={() => this.open('purposes', obj)} key={obj.code} code={obj.code} description={obj.description}/>;
+    });
 
     return (
       <div className="page namingScheme">
-        {this.state.modal ? <Modal field={this.state.modal} data={this.state.openData} save={this.addData} close={() => this.setState({modal: false, openData: {}})}/> : null}
+        {this.state.modal ? <Modal dispatch={this.props.dispatch} field={this.state.modal} data={this.state.openData} close={() => this.setState({modal: false, openData: {}})}/> : null}
         <div className="actions">
           <SearchBar search={this.search}/>
         </div>
 
-        {(this.state.searchResultL && !locations.length && !purposes.length) ?
+        {(this.state.search && !mappedLocations.length && !mappedPurposes.length) ?
           <div className="sadFace">
             <Sad/>
             <span>No results found</span>
@@ -130,7 +104,7 @@ export default class extends Component{
               </div>
               <div className="tbl-content">
                 <table cellPadding="0" cellSpacing="0" border="0">
-                  <tbody>{locations}</tbody>
+                  <tbody>{mappedLocations}</tbody>
                 </table>
               </div>
             </div>
@@ -149,7 +123,7 @@ export default class extends Component{
               </div>
               <div className="tbl-content">
                 <table cellPadding="0" cellSpacing="0" border="0">
-                  <tbody>{purposes}</tbody>
+                  <tbody>{mappedPurposes}</tbody>
                 </table>
               </div>
             </div>
@@ -192,8 +166,13 @@ class Modal extends Component{
       url: update ? '/'+this.props.field+'/'+encodeURIComponent(this.props.data.code.toString().toLowerCase()) : '/'+this.props.field,
       data: data
     }).then(res => {
-      // Send data to page, remove old field
-      this.props.save(this.props.field, res.data, this.props.data.code);
+      const field = this.props.field === 'locations' ? 'LOCATION' : 'PURPOSE';
+
+      // Update store
+      this.props.dispatch({
+        type: update ? 'UPDATE_'+field : 'ADD_'+field,
+        payload: res.data
+      });
 
       // Close modal
       this.props.close();
@@ -211,7 +190,14 @@ class Modal extends Component{
     }
 
     axios.delete(`/${this.props.field}/${encodeURIComponent(this.props.data.code)}`).then(() => {
-      this.props.save(this.props.field, null, this.props.data.code);
+      const field = this.props.field === 'locations' ? 'LOCATION' : 'PURPOSE';
+      
+      // Update store
+      this.props.dispatch({
+        type: 'REMOVE_'+field,
+        payload: this.props.data.code
+      });
+
       this.props.close();
     }).catch(axiosErrorHandler);
 
