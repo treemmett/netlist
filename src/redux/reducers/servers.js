@@ -1,4 +1,7 @@
-export default function(state={}, action){
+export default function(state={
+  fetching: false,
+  data: []
+}, action){
   switch(action.type){
     case 'ADD_SERVER': {
       state = {...state};

@@ -1,4 +1,7 @@
-export default function(state={}, action){
+export default function(state={
+  fetching: false,
+  data: []
+}, action){
   switch(action.type){
     case 'GET_USERS_PENDING': {
       state = {
