@@ -1,5 +1,11 @@
 export default function(state={}, action){
   switch(action.type){
+    case 'ADD_SERVER': {
+      state = {...state};
+      state.data.push(action.payload);
+      break;
+    }
+
     case 'GET_SERVERS_PENDING': {
       state = {
         ...state,
@@ -22,6 +28,34 @@ export default function(state={}, action){
         ...state,
         fetching: false,
         error: action.payload
+      }
+      break;
+    }
+
+    case 'REMOVE_SERVER': {
+      state = {...state};
+      // Find index of old data
+      const index = state.data.findIndex(server => {
+        return server.serverName.toLowerCase() === action.payload.toLowerCase();
+      });
+
+      // Replace data
+      if(index > -1){
+        state.data.splice(index, 1);
+      }
+      break;
+    }
+
+    case 'UPDATE_SERVER': {
+      state = {...state};
+      // Find index of old data
+      const index = state.data.findIndex(server => {
+        return server.serverName.toLowerCase() === action.payload.serverName.toLowerCase();
+      });
+
+      // Replace data
+      if(index > -1){
+        state.data[index] = action.payload;
       }
       break;
     }

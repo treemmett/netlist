@@ -16,7 +16,7 @@ import Sad from '../svg/Sad';
 
 @connect(store => {
   return {
-    servers: store.servers
+    servers: store.servers.data
   }
 })
 export default class ServerList extends Component{
@@ -25,76 +25,19 @@ export default class ServerList extends Component{
     this.state = {
       modal: false,
       openServer: {applications: []},
-      data: [],
-      namingKey: {locations: [], purposes: []},
-      searchResult: null
+      search: null
     }
-  }
- 
-  componentDidMount(){
-    this.refresh();
-  }
-
-  refresh = () => {
-    // API call to get all servers
-    axios.get('/servers').then(res => this.setState({data: this.sortServers(res.data)})).catch(axiosErrorHandler);
-
-    // Get updated naming key
-    const requests = [
-      axios.get('/locations'),
-      axios.get('/purposes')
-    ];
-
-    Promise.all(requests).then(res => this.setState({namingKey: {locations: sort(res[0].data), purposes: sort(res[1].data)}})).catch(axiosErrorHandler);
-
-    function sort(data){
-      data.sort(((a, b) => {
-        if(a.description.toString().toLowerCase() > b.description.toString().toLowerCase()) return 1;
-        if(a.description.toString().toLowerCase() < b.description.toString().toLowerCase()) return -1;
-        return 0;
-      }));
-  
-      return data;
-    }
-  }
-
-  addToData = (newData, removeData) => {
-    // Find server
-    const data = this.state.data.slice(0);
-
-    // Find and remove data if removeData was received
-    if(removeData){
-      const index = data.findIndex(obj => obj.serverName === removeData);
-      data.splice(index, 1);
-    }
-
-    if(newData){
-      data.push(newData);
-    }
-    this.setState({data: this.sortServers(data)});
-  }
-
-  sortServers = data => {
-    data.sort(((a, b) => {
-      try{
-        if(a.serverName.toLowerCase() > b.serverName.toLowerCase()) return 1;
-        if(a.serverName.toLowerCase() < b.serverName.toLowerCase()) return -1;
-      }catch(e){ /* We don't care about catching anything here. Must likely due to missing servername */}
-      return 0;
-    }));
-
-    return data;
   }
 
   openDetails = serverName => {
-    const server = this.state.data.find(obj => obj.serverName === serverName);
+    const server = this.props.servers.find(obj => obj.serverName === serverName);
     this.setState({openServer: server, modal: true});
   }
 
   search = e => {
     // Remove search result if value is empty
     if(!e.target.value){
-      this.setState({searchResult: null});
+      this.setState({search: null});
       return;
     }
 
@@ -104,33 +47,34 @@ export default class ServerList extends Component{
     // Create regex from search value
     const reg = new RegExp(chars, 'i');
 
-    // Find data that matches search result
-    const data = this.state.data.filter(obj => reg.test(obj.serverName));
-
-    this.setState({searchResult: this.sortServers(data)});
+    // Send search to renderer
+    this.setState({search: reg});
   }
 
   render(){
-    console.log(this.props.servers);
-    const rows = [];
-
-    // Show search result, or all data
-    const viewset = this.state.searchResult ? this.state.searchResult : this.state.data;
-
-    while(rows.length < viewset.length){
-      rows.push(<Row openDetails={this.openDetails} data={viewset[rows.length]} key={rows.length}/>);
-    }
+    const mappedServers = this.props.servers.filter(server => {
+      // Apply search filter
+      return !this.state.search || this.state.search.test(server.serverName);
+    }).sort((a, b) => {
+      // Sort servers by name
+      if(a.serverName.toLowerCase() > b.serverName.toLowerCase()) return 1;
+      if(a.serverName.toLowerCase() < b.serverName.toLowerCase()) return -1;
+      return 0;
+    }).map((server, i) => {
+      // Render server
+      return <Row openDetails={this.openDetails} data={server} key={i}/>
+    });
 
     return (
       <React.Fragment>
-        {this.state.modal ? <Modal history={this.props.history} namingKey={this.state.namingKey} allData={this.state.data} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal history={this.props.history} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="serverList page">
           <div className="actions">
             <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
             <SearchBar search={this.search}/>
           </div>
 
-          {(this.state.searchResult && !rows.length) ?
+          {(this.state.search && !mappedServers.length) ?
             <div className="sadFace">
               <Sad/>
               <span>No servers found</span>
@@ -154,7 +98,7 @@ export default class ServerList extends Component{
               <div className="tbl-content">
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <tbody>
-                    {rows}
+                    {mappedServers}
                   </tbody>
                 </table>
               </div>
@@ -175,6 +119,13 @@ const Row = props => (
   </tr>
 );
 
+@connect(store => {
+  return {
+    servers: store.servers.data,
+    locations: store.locations.data,
+    purposes: store.purposes.data
+  }
+})
 class Modal extends Component{
   constructor(props){
     super(props);
@@ -202,11 +153,11 @@ class Modal extends Component{
   componentDidMount(){
     // Check if purposes and locations are set
     const errors = [];
-    if(!this.props.namingKey.locations.length){
+    if(!this.props.locations.length){
       errors.push('Please create a location before adding a server');
     }
 
-    if(!this.props.namingKey.purposes.length){
+    if(!this.props.purposes.length){
       errors.push('Please create a purpose before adding a server');
     }
 
@@ -249,9 +200,7 @@ class Modal extends Component{
     
     // Disable form
     this.setState({disabled: true});
-
     const data = serialize(e.target);
-
     const update = Boolean(this.props.data.serverName);
 
     axios({
@@ -259,8 +208,11 @@ class Modal extends Component{
       url: update ? '/servers/'+encodeURIComponent(this.props.data.serverName.toLowerCase()) : '/servers',
       data: data
     }).then(res => {
-      // Add new data to table
-      this.props.save(res.data, this.props.data.serverName);
+      // Add new server to store
+      this.props.dispatch({
+        type: update ? 'UPDATE_SERVER' : 'ADD_SERVER',
+        payload: res.data
+      });
   
       // Close modal
       this.props.close();
@@ -278,7 +230,12 @@ class Modal extends Component{
     }
 
     axios.delete('/servers/'+encodeURIComponent(this.props.data.serverName.toLowerCase())).then(() => {
-      this.props.save(null, this.props.data.serverName);
+      // Remove server from store
+      this.props.dispatch({
+        type: 'REMOVE_SERVER',
+        payload: this.props.data.serverName
+      });
+
       this.props.close();
     }).catch(axiosErrorHandler);
   }
@@ -306,7 +263,7 @@ class Modal extends Component{
         // Check each item in array for available name
         const index = i.toString().padStart(3, '0')
         const regex = new RegExp(location + purpose + index, 'gi');
-        const found = this.props.allData.find(obj => regex.test(obj.serverName));
+        const found = this.props.servers.find(obj => regex.test(obj.serverName));
 
         if(!found){
           resolve(i);
@@ -323,16 +280,14 @@ class Modal extends Component{
 
   render(){
     // Render all locations
-    const locations = [<option key="0" value="" disabled/>];
-    for(let i of this.props.namingKey.locations){
-      locations.push(<option key={i.code} value={i.code} label={i.description}/>);
-    }
+    const locations = [<option key="0" value="" disabled/>].concat(this.props.locations.map(i => {
+      return <option key={i.code} value={i.code} label={i.description}/>
+    }));
 
     // Render all purposes
-    const purposes = [<option key="0" value="" disabled/>];
-    for(let i of this.props.namingKey.purposes){
-      purposes.push(<option key={i.code} value={i.code} label={i.description}/>);
-    }
+    const purposes = [<option key="0" value="" disabled/>].concat(this.props.purposes.map(i => {
+      return <option key={i.code} value={i.code} label={i.description}/>
+    }));
 
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
