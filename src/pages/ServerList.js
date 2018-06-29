@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
+import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import toast from '../components/Toast';
@@ -160,7 +161,7 @@ export default class ServerList extends Component{
 }
 
 const Row = props => (
-  <tr onClick={e => props.openDetails(props.data.serverName)}>
+  <tr className={classNames({retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
     <td>{props.data.serverName}</td>
     <td>{props.data.applications.length}</td>
     <td>{props.data.patchDate}</td>
@@ -406,6 +407,10 @@ class Modal extends Component{
               <label htmlFor="monitoring">Monitoring Configured</label>
               <input className="checkbox" type="checkbox" id="monitoring" name="monitoring" defaultChecked={this.props.data.monitoring}/>
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
+
+              <label htmlFor="monitoring">Retired</label>
+              <input className="checkbox" type="checkbox" id="retired" name="retired" defaultChecked={this.props.data.retired}/>
+              <label className="checkbox icon" htmlFor="retired"><Check/></label>
 
               <label htmlFor="applications">Applications</label>
               <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>

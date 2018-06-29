@@ -52,6 +52,7 @@ const serverSchema = mongoose.Schema({
     enum: ['appliance', 'server'],
     trim: true
   },
+  retired: {type: Boolean},
   site: {type: String, trim: true},
   updatedBy: {type: String, trim: true},
   url: {type: String, trim: true},

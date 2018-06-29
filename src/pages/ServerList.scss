@@ -10,4 +10,8 @@
     margin-bottom: 0.5rem;
     height: 2.5em;
   }
+
+  tr.retired td{
+    color: lighten(#000, 80%);
+  }
 }
