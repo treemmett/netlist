@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { Toaster } from './components/Toast';
 import { Provider, connect } from 'react-redux';
 import store from './redux/store';
+import './utils/dataManager';
 
 // Global styles
 import './index.scss';

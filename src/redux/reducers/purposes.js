@@ -1,6 +1,6 @@
 export default function(state={}, action){
   switch(action.type){
-    case 'GET_SERVERS_PENDING': {
+    case 'GET_PURPOSES_PENDING': {
       state = {
         ...state,
         fetching: true
@@ -8,16 +8,16 @@ export default function(state={}, action){
       break;
     }
 
-    case 'GET_SERVERS_FULFILLED': {
+    case 'GET_PURPOSES_FULFILLED': {
       state = {
         ...state,
-        servers: action.payload.data,
+        data: action.payload.data,
         fetching: false
       }
       break;
     }
 
-    case 'GET_SERVERS_REJECTED': {
+    case 'GET_PURPOSES_REJECTED': {
       state = {
         ...state,
         fetching: false,
