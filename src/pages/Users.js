@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import SearchBar from '../components/SearchBar';
 import toast from '../components/Toast';
 import axios from 'axios';
@@ -9,38 +10,24 @@ import Check from '../svg/Check';
 import Sad from '../svg/Sad';
 import './Users.scss';
 
+@connect(store => {
+  return {
+    users: store.users.data
+  }
+})
 export default class extends Component{
   constructor(props){
     super(props);
     this.state = {
       modal: false,
-      currentUser: {},
-      users: []
+      currentUser: {}
     }
-  }
-
-  componentDidMount(){
-    this.refresh();
-  }
-
-  refresh = () => {
-    axios.get('/users').then(res => this.setState({users: this.sort(res.data)})).catch(axiosErrorHandler);
-  }
-
-  sort = data => {
-    data.sort(((a, b) => {
-      if(a.username.toLowerCase() > b.username.toLowerCase()) return 1;
-      if(a.username.toLowerCase() < b.username.toLowerCase()) return -1;
-      return 0;
-    }));
-
-    return data;
   }
 
   search = e => {
     // Remove search result if value is empty
     if(!e.target.value){
-      this.setState({searchResult: null});
+      this.setState({search: null});
       return;
     }
 
@@ -50,48 +37,34 @@ export default class extends Component{
     // Create regex from search value
     const reg = new RegExp(chars, 'i');
 
-    // Find data that matches search result
-    const data = this.state.users.filter(obj => reg.test(obj.username));
-
-    this.setState({searchResult: data});
-  }
-
-  addData = (dataToAdd, userToDelete) => {
-    const data = [...this.state.users];
-
-    if(userToDelete){
-      const index = data.findIndex(obj => obj.username === userToDelete);
-      data.splice(index, 1);
-    }
-
-    if(dataToAdd){
-      data.push(dataToAdd);
-    }
-
-    this.setState({users: this.sort(data)});
+    // Send regex to rendered
+    this.setState({search: reg});
   }
 
   render(){
-    const rows = [];
-
-    // Show search result, or all data
-    const viewset = this.state.searchResult ? this.state.searchResult : this.state.users;
-
-    while(rows.length < viewset.length){
-      const data = viewset[rows.length];
-      rows.push(<Row open={() => this.setState({modal: true, currentUser: data})} data={data} key={rows.length}/>);
-    }
+    const mappedUsers = this.props.users.filter(user => {
+      // Apply search filter
+      return !this.state.search || this.state.search.test(user.username);
+    }).sort((a, b) => {
+      // Sort by username
+      if(a.username.toLowerCase() > b.username.toLowerCase()) return 1;
+      if(a.username.toLowerCase() < b.username.toLowerCase()) return -1;
+      return 0;
+    }).map(user => {
+      // Render users
+      return <Row open={() => this.setState({modal: true, currentUser: user})} data={user} key={user.username}/>
+    });
 
     return (
       <React.Fragment>
         <div className="users page">
-          {this.state.modal ? <Modal save={this.addData} currentUser={this.state.currentUser} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
+          {this.state.modal ? <Modal dispatch={this.props.dispatch} currentUser={this.state.currentUser} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
           <div className="actions">
             <div className="btn" onClick={() => this.setState({modal: true})}>New User</div>
             <SearchBar search={this.search}/>
           </div>
 
-          {(this.state.searchResult && !rows.length) ?
+          {(this.state.search && !mappedUsers.length) ?
             <div className="sadFace">
               <Sad/>
               <span>No users found</span>
@@ -116,7 +89,7 @@ export default class extends Component{
               <div className="tbl-content">
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <tbody>
-                    {rows}
+                    {mappedUsers}
                   </tbody>
                 </table>
               </div>
@@ -167,7 +140,11 @@ class Modal extends Component{
       url: '/users' + (update ? '/'+encodeURIComponent(this.props.currentUser.username.toLowerCase()) : ''),
       data: data
     }).then(res => {
-      this.props.save(res.data, this.props.currentUser.username);
+      // Update store
+      this.props.dispatch({
+        type: update ? 'UPDATE_USER' : 'ADD_USER',
+        payload: res.data
+      });
       this.props.close();
     }).catch(err => {
       this.setState({disabled: false});
@@ -181,7 +158,11 @@ class Modal extends Component{
     }
 
     axios.delete('/users/'+encodeURIComponent(this.props.currentUser.username.toLowerCase())).then(() => {
-      this.props.save(null, this.props.currentUser);
+      // Update store
+      this.props.dispatch({
+        type: 'REMOVE_USER',
+        payload: this.props.currentUser.username
+      });
       this.props.close();
     }).catch(axiosErrorHandler);
   }
