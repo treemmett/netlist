@@ -116,46 +116,44 @@ export default class ServerList extends Component{
     }
 
     return (
-      <React.Fragment>
+      <div className="serverList page">
         {this.state.modal ? <Modal history={this.props.history} namingKey={this.state.namingKey} allData={this.state.data} data={this.state.openServer} save={this.addToData} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
-        <div className="serverList page">
-          <div className="actions">
-            <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
-            <SearchBar search={this.search}/>
+        <div className="actions">
+          <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
+          <SearchBar search={this.search}/>
+        </div>
+
+        {(this.state.searchResult && !rows.length) ?
+          <div className="sadFace">
+            <Sad/>
+            <span>No servers found</span>
           </div>
 
-          {(this.state.searchResult && !rows.length) ?
-            <div className="sadFace">
-              <Sad/>
-              <span>No servers found</span>
-            </div>
+          :
 
-            :
-
-            <div className="table">
-              <div className="tbl-header">
-                <table cellPadding="0" cellSpacing="0" border="0">
-                  <thead>
-                    <tr>
-                      <th>Server</th>
-                      <th>Applications</th>
-                      <th>Last Updated</th>
-                      <th>Last Updater</th>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-              <div className="tbl-content">
-                <table cellPadding="0" cellSpacing="0" border="0">
-                  <tbody>
-                    {rows}
-                  </tbody>
-                </table>
-              </div>
+          <div className="table">
+            <div className="tbl-header">
+              <table cellPadding="0" cellSpacing="0" border="0">
+                <thead>
+                  <tr>
+                    <th>Server</th>
+                    <th>Applications</th>
+                    <th>Last Updated</th>
+                    <th>Last Updater</th>
+                  </tr>
+                </thead>
+              </table>
             </div>
-          }
-        </div>
-      </React.Fragment>
+            <div className="tbl-content">
+              <table cellPadding="0" cellSpacing="0" border="0">
+                <tbody>
+                  {rows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
     );
   }
 }
@@ -377,8 +375,12 @@ class Modal extends Component{
                 <label className="radio" htmlFor="virt_3">Cloud</label>
               </div>
 
-              <label htmlFor="maintWin">Maintenance Window</label>
-              <input type="text" id="maintWin" name="maintWin" defaultValue={this.props.data.maintWin}/>
+              <label htmlFor="maintWinFrom">Maintenance Window</label>
+              <div className="maintWin">
+                <input onChange={e => parseText(e, {type: 'time'})} type="text" id="maintWin" name="maintWin" size="4" defaultValue={this.props.data.maintWin}/>
+                <span> - </span>
+                <input onChange={e => parseText(e, {type: 'time'})} type="text" id="maintWinTo" name="maintWinTo" size="4" defaultValue={this.props.data.maintWinTo}/>
+              </div>
 
               <label htmlFor="owner">Owner</label>
               <input type="text" id="owner" name="owner" defaultValue={this.props.data.owner}/>

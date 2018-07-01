@@ -20,10 +20,54 @@ export default function parse(e, options){
   // Error message to be set
   let error = '';
 
-  if(options.type === 'text'){
-    value = value.replace(/[^a-zA-Z]/gi, '');
-  }else if(options.type === 'number'){
-    value = value.replace(/\D/gi, '');
+  switch(options.type){
+    case 'number': {
+      value = value.replace(/\D/gi, '');
+      break;
+    }
+
+    case 'text': {
+      value = value.replace(/[^a-zA-Z]/gi, '');
+      break;
+    }
+
+    case 'time': {
+      value = value.replace(/[^\d]/gi, '');
+
+      let h1 = value.slice(0, 1);
+      let h2 = value.slice(1, 2);
+      let m1 = value.slice(2, 3);
+      let m2 = value.slice(3, 4);
+      let c = '';
+
+      // Remove colons in wrong positions
+      if(h1 === ':') h1 = '';
+      if(h2 === ':') h2 = '';
+      if(m1 === ':') m1 = '';
+      if(m2 === ':') m2 = '';
+
+      if(h1 > 2){
+        h1 = '';
+      }
+
+      if(h1 == 2 && h2 > 3){ //eslint-disable-line eqeqeq
+        h2 = '';
+      }
+
+      if(m1 > 5){
+        m1 = '';
+      }
+
+      if(m1){
+        c = ':';
+      }
+
+      value = h1+h2+c+m1+m2;
+
+      break;
+    }
+
+    default:break;
   }
 
   if(options.uppercase && !options.lowercase){
