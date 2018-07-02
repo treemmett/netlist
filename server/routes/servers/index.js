@@ -22,6 +22,7 @@ const serverSchema = mongoose.Schema({
     }
   },
   maintWin: {type: String, trim: true},
+  maintWinTo: {type: String, trim: true},
   memory: {type: String, trim: true},
   monitoring: Boolean,
   os: {type: String, trim: true},
@@ -52,6 +53,7 @@ const serverSchema = mongoose.Schema({
     enum: ['appliance', 'server'],
     trim: true
   },
+  retired: {type: Boolean},
   site: {type: String, trim: true},
   updatedBy: {type: String, trim: true},
   url: {type: String, trim: true},

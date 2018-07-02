@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
 import toast from '../components/Toast';
@@ -66,52 +67,50 @@ export default class ServerList extends Component{
     });
 
     return (
-      <React.Fragment>
+      <div className="serverList page">
         {this.state.modal ? <Modal history={this.props.history} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
-        <div className="serverList page">
-          <div className="actions">
-            <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
-            <SearchBar search={this.search}/>
+        <div className="actions">
+          <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
+          <SearchBar search={this.search}/>
+        </div>
+
+        {(this.state.search && !mappedServers.length) ?
+          <div className="sadFace">
+            <Sad/>
+            <span>No servers found</span>
           </div>
 
-          {(this.state.search && !mappedServers.length) ?
-            <div className="sadFace">
-              <Sad/>
-              <span>No servers found</span>
-            </div>
+          :
 
-            :
-
-            <div className="table">
-              <div className="tbl-header">
-                <table cellPadding="0" cellSpacing="0" border="0">
-                  <thead>
-                    <tr>
-                      <th>Server</th>
-                      <th>Applications</th>
-                      <th>Last Updated</th>
-                      <th>Last Updater</th>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-              <div className="tbl-content">
-                <table cellPadding="0" cellSpacing="0" border="0">
-                  <tbody>
-                    {mappedServers}
-                  </tbody>
-                </table>
-              </div>
+          <div className="table">
+            <div className="tbl-header">
+              <table cellPadding="0" cellSpacing="0" border="0">
+                <thead>
+                  <tr>
+                    <th>Server</th>
+                    <th>Applications</th>
+                    <th>Last Updated</th>
+                    <th>Last Updater</th>
+                  </tr>
+                </thead>
+              </table>
             </div>
-          }
-        </div>
-      </React.Fragment>
+            <div className="tbl-content">
+              <table cellPadding="0" cellSpacing="0" border="0">
+                <tbody>
+                  {mappedServers}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
     );
   }
 }
 
 const Row = props => (
-  <tr onClick={e => props.openDetails(props.data.serverName)}>
+  <tr className={classNames({retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
     <td>{props.data.serverName}</td>
     <td>{props.data.applications.length}</td>
     <td>{props.data.patchDate}</td>
@@ -338,8 +337,12 @@ class Modal extends Component{
                 <label className="radio" htmlFor="virt_3">Cloud</label>
               </div>
 
-              <label htmlFor="maintWin">Maintenance Window</label>
-              <input type="text" id="maintWin" name="maintWin" defaultValue={this.props.data.maintWin}/>
+              <label htmlFor="maintWinFrom">Maintenance Window</label>
+              <div className="maintWin">
+                <input onChange={e => parseText(e, {type: 'time'})} type="text" id="maintWin" name="maintWin" size="4" defaultValue={this.props.data.maintWin}/>
+                <span> - </span>
+                <input onChange={e => parseText(e, {type: 'time'})} type="text" id="maintWinTo" name="maintWinTo" size="4" defaultValue={this.props.data.maintWinTo}/>
+              </div>
 
               <label htmlFor="owner">Owner</label>
               <input type="text" id="owner" name="owner" defaultValue={this.props.data.owner}/>
@@ -368,6 +371,10 @@ class Modal extends Component{
               <label htmlFor="monitoring">Monitoring Configured</label>
               <input className="checkbox" type="checkbox" id="monitoring" name="monitoring" defaultChecked={this.props.data.monitoring}/>
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
+
+              <label htmlFor="monitoring">Retired</label>
+              <input className="checkbox" type="checkbox" id="retired" name="retired" defaultChecked={this.props.data.retired}/>
+              <label className="checkbox icon" htmlFor="retired"><Check/></label>
 
               <label htmlFor="applications">Applications</label>
               <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>

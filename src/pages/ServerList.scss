@@ -10,4 +10,40 @@
     margin-bottom: 0.5rem;
     height: 2.5em;
   }
+
+  tr.retired td{
+    color: lighten(#000, 80%);
+  }
+
+  .maintWin{
+    grid-column: 2;
+
+    *{
+      height: 100%;
+      border: none;
+      border-radius: 0;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      transition: border-color 0.1s linear;
+      will-change: border-color;
+    }
+
+    *:first-child{
+      border-radius: 5px 0 0 5px;
+      border-left: 1px solid #ccc;
+    }
+
+    *:last-child{
+      border-radius: 0 5px 5px 0;
+      border-right: 1px solid #ccc;
+    }
+
+    &:focus-within *{
+      border-color: #666;
+    }
+
+    span{
+      padding: 0.3em 0;
+    }
+  }
 }
