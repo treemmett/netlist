@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
 import toast from '../components/Toast';
 import axios from 'axios';
@@ -12,6 +13,7 @@ import './Users.scss';
 
 @connect(store => {
   return {
+    admin: store.login.admin,
     users: store.users.data
   }
 })
@@ -52,7 +54,7 @@ export default class extends Component{
       return 0;
     }).map(user => {
       // Render users
-      return <Row open={() => this.setState({modal: true, currentUser: user})} data={user} key={user.username}/>
+      return <Row open={this.props.admin ? () => this.setState({modal: true, currentUser: user}) : null} data={user} key={user.username} hover={this.props.admin}/>
     });
 
     return (
@@ -60,7 +62,7 @@ export default class extends Component{
         <div className="users page">
           {this.state.modal ? <Modal dispatch={this.props.dispatch} currentUser={this.state.currentUser} close={() => this.setState({modal: false, currentUser: {}})}/> : null}
           <div className="actions">
-            <div className="btn" onClick={() => this.setState({modal: true})}>New User</div>
+            {this.props.admin ? <div className="btn" onClick={() => this.setState({modal: true})}>New User</div> : null}
             <SearchBar search={this.search}/>
           </div>
 
@@ -102,7 +104,7 @@ export default class extends Component{
 }
 
 const Row = props => (
-  <tr onClick={props.open}>
+  <tr onClick={props.open} className={classNames({hover: props.hover})}>
     <td>{props.data.username}</td>
     <td>{parseTime(props.data.lastLogin)}</td>
     <td>{parseTime(props.data.createdAt)}</td>

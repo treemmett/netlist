@@ -347,7 +347,7 @@ form{
       border-radius: 0 0 0.5em 0.5em;
       overflow: hidden;
 
-      tr:hover{
+      tr.hover:hover{
         cursor: pointer;
         background-color: darken(#fff, 3%);
       }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from'react-redux';
+import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
@@ -13,6 +14,7 @@ import Sad from '../svg/Sad';
 
 @connect(store => {
   return {
+    admin: store.login.admin,
     locations: store.locations.data,
     purposes: store.purposes.data
   }
@@ -58,7 +60,7 @@ export default class extends Component{
       return 0;
     })).map((obj) => {
       // Render item
-      return <Row onClick={() => this.open('locations', obj)} key={obj.code} code={obj.code} description={obj.description}/>;
+      return <Row onClick={this.props.admin ? () => this.open('locations', obj) : null} key={obj.code} code={obj.code} description={obj.description} hover={this.props.admin}/>;
     });
 
     const mappedPurposes = this.props.purposes.filter(obj => {
@@ -71,7 +73,7 @@ export default class extends Component{
       return 0;
     })).map((obj) => {
       // Render item
-      return <Row onClick={() => this.open('purposes', obj)} key={obj.code} code={obj.code} description={obj.description}/>;
+      return <Row onClick={this.props.admin ? () => this.open('purposes', obj) : null} key={obj.code} code={obj.code} description={obj.description} hover={this.props.admin}/>;
     });
 
     return (
@@ -92,7 +94,7 @@ export default class extends Component{
           <div className="tables">
             <div className="table">
               <div className="tbl-header">
-                <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div>
+                {this.props.admin ? <div className="icon click" onClick={() => this.setState({modal: 'locations'})}><PlusCircle/></div> : null}
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <thead>
                     <tr>
@@ -111,7 +113,7 @@ export default class extends Component{
 
             <div className="table">
               <div className="tbl-header">
-                <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div>  
+                {this.props.admin ? <div className="icon click" onClick={() => this.setState({modal: 'purposes'})}><PlusCircle/></div> : null}
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <thead>
                     <tr>
@@ -135,7 +137,7 @@ export default class extends Component{
 }
 
 const Row = props => (
-  <tr {...props}>
+  <tr onClick={props.onClick} className={classNames({hover: props.hover})}>
     <td>{props.code}</td>
     <td>{props.description}</td>
   </tr>

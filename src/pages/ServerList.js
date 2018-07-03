@@ -17,6 +17,7 @@ import Sad from '../svg/Sad';
 
 @connect(store => {
   return {
+    admin: store.login.admin,
     servers: store.servers.data
   }
 })
@@ -68,9 +69,9 @@ export default class ServerList extends Component{
 
     return (
       <div className="serverList page">
-        {this.state.modal ? <Modal history={this.props.history} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal history={this.props.history} admin={this.props.admin} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="actions">
-          <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div>
+          {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
         </div>
 
@@ -110,7 +111,7 @@ export default class ServerList extends Component{
 }
 
 const Row = props => (
-  <tr className={classNames({retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
+  <tr className={classNames('hover', {retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
     <td>{props.data.serverName}</td>
     <td>{props.data.applications.length}</td>
     <td>{props.data.patchDate}</td>
@@ -382,9 +383,9 @@ class Modal extends Component{
               {this.state.appInputs}
 
               <div className="actions">
-                <input onClick={this.props.close} className="btn secondary" type="button" value="Cancel"/>
-                {this.props.data.serverName ? <input onClick={this.delete} className="btn red" type="button" value="Delete"/> : null}
-                <input className="btn" type="submit" value="Save"/>
+                <input onClick={this.props.close} className="btn secondary" type="button" value={this.props.admin ? 'Cancel' : 'Close'}/>
+                {this.props.data.serverName && this.props.admin ? <input onClick={this.delete} className="btn red" type="button" value="Delete"/> : null}
+                {this.props.admin ? <input className="btn" type="submit" value="Save"/> : null}
               </div>
             </form>
           </fieldset>
