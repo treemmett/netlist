@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import { Toaster } from './components/Toast';
 import { Provider, connect } from 'react-redux';
 import store from './redux/store';
-import './utils/dataManager';
+import getData from './utils/dataManager';
 
 // Global styles
 import './index.scss';
@@ -32,6 +32,9 @@ axios.interceptors.request.use(request => {
 });
 axios.interceptors.response.use(response => {
   if(response.headers['x-auth-token']){
+    // Cache token in storage
+    localStorage.setItem('authToken', response.headers['x-auth-token']);
+
     // Send token data to store
     store.dispatch({
       type: 'SET_LOGIN',
@@ -59,6 +62,9 @@ axios.interceptors.response.use(null, error => {
 
   return Promise.reject(error);
 });
+
+// Setup API fetching
+getData();
 
 @connect(store => {
   return {

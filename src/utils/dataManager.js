@@ -36,4 +36,7 @@ function checkIfLoggedIn(){
   }
 }
 
-store.subscribe(checkIfLoggedIn);
+export default function(){
+  checkIfLoggedIn();
+  store.subscribe(checkIfLoggedIn);
+}
