@@ -56,7 +56,7 @@ db.on('error', console.error);
 db.once('open', () => {
 
   // Start server once DB is connected
-  app.use('/netlist/api', require('./routes'));
+  app.use('/api', require('./routes'));
 
   // 404 catch all
   app.all('*', (req, res, next) => {

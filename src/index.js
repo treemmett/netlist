@@ -22,7 +22,7 @@ import Sidebar from './components/Sidebar';
 import Users from './pages/Users';
 
 // Configure global API settings
-axios.defaults.baseURL = '/netlist/api';
+axios.defaults.baseURL = '/api';
 axios.interceptors.request.use(request => {
   // Add authorization token to all requests
   if(store.getState().login.token){

@@ -37,9 +37,9 @@
     ],
     "verbose": false
   },
-  "homepage": "/netlist",
+  "homepage": "/",
   "proxy": {
-    "/netlist/api": {
+    "/api": {
       "target": "http://localhost:8080/"
     }
   }
