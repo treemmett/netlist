@@ -10,6 +10,7 @@ import parseText from '../utils/parseText';
 import './ServerList.scss';
 
 // Icons
+import Download from '../svg/Download';
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
@@ -53,6 +54,24 @@ export default class ServerList extends Component{
     this.setState({search: reg});
   }
 
+  download = e => {
+    axios({
+      method: 'GET',
+      headers: {
+        accept: 'text/csv'
+      },
+      url: '/servers'
+    }).then(res => {
+      const url = `data:${res.headers['content-type']},${encodeURIComponent(res.data)}`;
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'Servers.csv');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }).catch(axiosErrorHandler)
+  }
+
   render(){
     const mappedServers = this.props.servers.filter(server => {
       // Apply search filter
@@ -73,6 +92,8 @@ export default class ServerList extends Component{
         <div className="actions">
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
+          <div className="spacer"/>
+          <div className="icon" onClick={this.download}><Download/></div>
         </div>
 
         {(this.state.search && !mappedServers.length) ?
