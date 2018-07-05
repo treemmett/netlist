@@ -1,5 +1,6 @@
 const servers = require('express').Router();
 const mongoose = require('mongoose');
+const convertToCSV = require('../../formatter/csv');
 
 const serverSchema = mongoose.Schema({
   applications: [{type: String}],
@@ -75,6 +76,34 @@ servers.get('/', (req, res, next) => {
   Server.find({}, {_id: 0, __v: 0}, (err, data) => {
     if(err){
       next(err);
+      return;
+    }
+
+    if(/text\/csv/i.test(req.headers.accept)){
+      res.set('Content-Type', 'text/csv').send(convertToCSV(data, 'serverName', {
+        serverName: 'Server Name',
+        applications: 'Applications',
+        backupDate: 'Last Backup Date',
+        cpu: 'CPU',
+        disks: 'Disks',
+        dnsName: 'DNS Name',
+        location: 'Location Code',
+        maintWin: 'Maintenance Window From',
+        maintWinTo: 'Maintenance Window To',
+        memory: 'Memory',
+        monitoring: 'Monitoring',
+        os: 'OS',
+        owner: 'Owner',
+        patchDate: 'Last Patch Date',
+        purpose: 'Purpose Code',
+        serverType: 'Server Type',
+        site: 'Site',
+        retired: 'Retired',
+        updatedBy: 'Last Updated By',
+        url: 'URL',
+        virtualization: 'Virtualization Type',
+        vlan: 'VLAN'
+      }));
       return;
     }
 
