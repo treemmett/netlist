@@ -5,7 +5,6 @@ import SearchBar from '../components/SearchBar';
 import toast from '../components/Toast';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
-import parseTime from '../utils/parseTime';
 import serialize from '../utils/serializer';
 import Check from '../svg/Check';
 import Sad from '../svg/Sad';
@@ -80,8 +79,6 @@ export default class extends Component{
                   <thead>
                     <tr>
                       <th>Username</th>
-                      <th>Last Login</th>
-                      <th>Created</th>
                       <th>Created By</th>
                       <th>Admin</th>
                     </tr>
@@ -106,8 +103,6 @@ export default class extends Component{
 const Row = props => (
   <tr onClick={props.open} className={classNames({hover: props.hover})}>
     <td>{props.data.username}</td>
-    <td>{parseTime(props.data.lastLogin)}</td>
-    <td>{parseTime(props.data.createdAt)}</td>
     <td>{props.data.createdBy}</td>
     <td>{props.data.admin ? <Check/> : ''}</td>
   </tr>
