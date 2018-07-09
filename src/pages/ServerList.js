@@ -134,7 +134,7 @@ export default class ServerList extends Component{
 const Row = props => (
   <tr className={classNames('hover', {retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
     <td>{props.data.serverName}</td>
-    <td>{props.data.applications.length}</td>
+    <td>{props.data.applications[0]}</td>
     <td>{props.data.patchDate}</td>
     <td>{props.data.updatedBy}</td>
   </tr>
