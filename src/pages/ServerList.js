@@ -75,7 +75,7 @@ export default class ServerList extends Component{
   render(){
     const mappedServers = this.props.servers.filter(server => {
       // Apply search filter
-      return !this.state.search || this.state.search.test(server.serverName);
+      return !this.state.search || this.state.search.test(server.serverName) || this.state.search.test(server.applications);
     }).sort((a, b) => {
       // Sort servers by name
       if(a.serverName.toLowerCase() > b.serverName.toLowerCase()) return 1;
