@@ -5,6 +5,7 @@ import locations from './locations';
 import login from './login';
 import purposes from './purposes';
 import servers from './servers';
+import settings from './settings';
 import users from './users';
 
 export default combineReducers({
@@ -12,5 +13,6 @@ export default combineReducers({
   login: login,
   purposes: purposes,
   servers: servers,
+  settings: settings,
   users: users
 });

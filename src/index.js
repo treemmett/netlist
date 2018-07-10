@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
+import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
 import Users from './pages/Users';
 
@@ -102,6 +103,7 @@ const Render = () => (
         <PrivateRoute exact path="/servers" component={ServerList}/>
         <PrivateRoute exact path="/namekey" component={NameKey}/>
         <PrivateRoute exact path="/users" component={Users}/>
+        <PrivateRoute exact path="/settings" component={Settings}/>
 
         <Route exact path="/login" component={Login}/>
         <Route exact path="/logout" component={Logout}/>

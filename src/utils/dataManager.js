@@ -9,6 +9,12 @@ function checkIfLoggedIn(){
 
   // Force data fetch if this is a new login
   if(isLoggedIn && wasLoggedIn !== isLoggedIn){
+
+    // Fetch settings
+    store.dispatch({
+      type: 'GET_SETTINGS',
+      payload: axios.get('/settings')
+    });
     
     // Fetch servers
     store.dispatch({

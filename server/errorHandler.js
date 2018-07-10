@@ -3,6 +3,8 @@ const errorCodes = {
 }
 
 module.exports = function(err, req, res, next){
+  console.log(err);
+  
   if(res.headersSent){
     return next(err)
   }

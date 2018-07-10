@@ -142,6 +142,7 @@ const Row = props => (
 
 @connect(store => {
   return {
+    dns: store.settings.settings.dns,
     servers: store.servers.data,
     locations: store.locations.data,
     purposes: store.purposes.data
@@ -296,7 +297,19 @@ class Modal extends Component{
       // Set servername to available index
       index = index.toString().padStart(3, '0');
       input.value = (location + purpose + index).toUpperCase();
+      document.getElementById('dnsName').value = (location + purpose + index).toLowerCase() + '.' + this.props.dns;
     })
+  }
+
+  populateDNS = e => {
+    const value = e.target.value.toUpperCase();
+    e.target.value = value;
+
+    if(value.trim()){
+      document.getElementById('dnsName').value = value.toLowerCase()+'.'+this.props.dns;
+    }else{
+      document.getElementById('dnsName').value = '';
+    }
   }
 
   render(){
@@ -324,7 +337,7 @@ class Modal extends Component{
               <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
 
               <label htmlFor="serverName">Server Name</label>
-              <input onChange={e => parseText(e, {uppercase: true})} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
+              <input onChange={this.populateDNS} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
 
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
