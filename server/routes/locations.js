@@ -1,6 +1,6 @@
 const locations = require('express').Router();
 const mongoose = require('mongoose');
-const Server = require('../servers').schema;
+const Server = require('./servers').schema;
 
 const schema = mongoose.Schema({
   code: {

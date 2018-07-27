@@ -1,6 +1,6 @@
 const servers = require('express').Router();
 const mongoose = require('mongoose');
-const convertToCSV = require('../../formatter/csv');
+const convertToCSV = require('../formatter/csv');
 
 const serverSchema = mongoose.Schema({
   applications: [{type: String}],

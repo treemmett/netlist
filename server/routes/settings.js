@@ -10,6 +10,11 @@ settings.get('/', (req, res, next) => {
   Setting.findOne({}, (err, data) => {
     if(err) return next(err);
 
+    // Create settings object if null
+    if(!data){
+      data = {_doc: {}}
+    }
+
     data = {...data}._doc;
     delete data._id;
     delete data.__v;

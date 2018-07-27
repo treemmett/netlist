@@ -1,14 +1,14 @@
 const auth = require('express').Router();
-const User = require('../users').schema;
+const User = require('./users').schema;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Load configuration
 let config;
 try{
-  config = require('../../config.json');
+  config = require('../config.json');
 }catch(e){
-  config = require('../../config.default.json');
+  config = require('../config.default.json');
 }
 
 auth.post('/', (req, res, next) => {

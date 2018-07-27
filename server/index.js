@@ -17,6 +17,10 @@ try{
 app.use(express.json());
 app.use(bodyparser.json());
 
+// Don't crash on unhandled exceptions
+app.on('uncaughtException', console.error);
+app.on('uncaughtRejection', console.error);
+
 // Configure default headers
 app.set('etag', false);
 app.use((req, res, next) => {
