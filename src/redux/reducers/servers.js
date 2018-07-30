@@ -26,6 +26,14 @@ export default function(state={
       break;
     }
 
+    case 'GET_SERVER_KEYS_FULFILLED': {
+      state = {
+        ...state,
+        keys: action.payload.data
+      }
+      break;
+    }
+
     case 'GET_SERVERS_REJECTED': {
       state = {
         ...state,

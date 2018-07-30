@@ -15,20 +15,23 @@ import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
 import Sad from '../svg/Sad';
+import Sliders from '../svg/Sliders';
 
 @connect(store => {
   return {
     admin: store.login.admin,
-    servers: store.servers.data
+    servers: store.servers.data,
+    headers: store.servers.keys
   }
 })
 export default class ServerList extends Component{
   constructor(props){
     super(props);
     this.state = {
+      customizeHeadersMenu: false,
       modal: false,
       openServer: {applications: []},
-      search: null
+      search: null,
     }
   }
 
@@ -93,6 +96,8 @@ export default class ServerList extends Component{
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
           <div className="spacer"/>
+          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={() => this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu headers={this.props.headers}/> : null}
+          </div>
           <div className="icon" onClick={this.download}><Download/></div>
         </div>
 
@@ -424,6 +429,24 @@ class Modal extends Component{
             </form>
           </fieldset>
         </div>
+      </div>
+    );
+  }
+}
+
+class HeaderMenu extends Component{
+  render(){
+    // Render options
+    let headers = Object.keys(this.props.headers).map((header, i) => (
+      <div key={i} onClick={e => e.stopPropagation()} className="headerItem">
+        <input name={header} id={header} type="checkbox"/>
+        <label htmlFor={header}>{this.props.headers[header]}</label>
+      </div>
+    ));
+
+    return (
+      <div className="headerMenu">
+        {headers}
       </div>
     );
   }

@@ -404,7 +404,7 @@ form{
     padding: 0 0.5em;
     cursor: pointer;
 
-    &:hover{
+    &:hover, &.focus{
       background-color: rgba(#fff, 0.7);
     }
   

@@ -130,6 +130,33 @@ servers.post('/', (req, res, next) => {
 });
 servers.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
+servers.get('/keys', (req, res, next) => {
+  res.send({
+    applications: 'Applications',
+    backupDate: 'Last Backup Date',
+    cpu: 'CPU',
+    disks: 'Disks',
+    dnsName: 'DNS Name',
+    location: 'Location Code',
+    maintWin: 'Maintenance Window From',
+    maintWinTo: 'Maintenance Window To',
+    memory: 'Memory',
+    monitoring: 'Monitoring Enabled',
+    os: 'OS',
+    owner: 'Owner',
+    patchDate: 'Last Patch Date',
+    purpose: 'Purpose Code',
+    serverName: 'Server Name',
+    serverType: 'Server Type',
+    retired: 'Retired',
+    site: 'Site',
+    updatedBy: 'Last Updated By',
+    url: 'URL',
+    virtualization: 'Virtualization',
+    vlan: 'VLAN'
+  });
+});
+
 servers.delete('/:serverName', (req, res,next) => {
   // Remove document from collection
   Server.findOneAndRemove({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, (err, resp) => {

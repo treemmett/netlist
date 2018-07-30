@@ -21,6 +21,10 @@ function checkIfLoggedIn(){
       type: 'GET_SERVERS',
       payload: axios.get('/servers')
     });
+    store.dispatch({
+      type: 'GET_SERVER_KEYS',
+      payload: axios.get('/servers/keys')
+    });
 
     // Fetch users
     store.dispatch({

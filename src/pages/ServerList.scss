@@ -11,6 +11,23 @@
     height: 2.5em;
   }
 
+  .headerMenu{
+    position: absolute;
+    z-index: 100;
+    top: 100%;
+    background-color: #fff;
+    padding: 0.5em;
+    border-radius: 5px;
+    box-shadow: 0 2px 9px 4px rgba(#000, 0.2);
+
+    .headerItem{
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      padding: 2px 0;
+    }
+  }
+
   tr.retired td{
     color: lighten(#000, 80%);
   }
