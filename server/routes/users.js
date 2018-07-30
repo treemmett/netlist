@@ -31,6 +31,39 @@ const schema = mongoose.Schema({
   admin: {
     type: Boolean,
     default: false
+  },
+  settings: {
+    headers: {
+      type: [String],
+      default: ['applications', 'serverName'],
+      enum: {
+        message: '{VALUE} is not a valid header.',
+        values: [
+          'applications',
+          'backupDate',
+          'cpu',
+          'disks',
+          'dnsName',
+          'location',
+          'maintWin',
+          'maintWinTo',
+          'memory',
+          'monitoring',
+          'os',
+          'owner',
+          'patchDate',
+          'purpose',
+          'serverName',
+          'serverType',
+          'retired',
+          'site',
+          'updatedBy',
+          'url',
+          'virtualization',
+          'vlan'
+        ]
+      }
+    }
   }
 });
 schema.pre('findOneAndUpdate', function(next){
@@ -96,6 +129,33 @@ users.post('/', (req, res, next) => {
   });
 });
 users.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
+
+users.patch('/headers/:header', (req, res, next) => {
+  User.findOne({username: req.user.username}, {settings: 1}, (err, data) => {
+    if(err) return next(err);
+
+    // Add every current header to new object
+    // This prevents default headers from erasing if the user hasn't set an option before
+    const headers = [...data.settings.headers];
+
+    // Remove header if it exists
+    const index = headers.indexOf(req.params.header);
+    if(index > -1){
+      headers.splice(index, 1);
+    }else if(req.params.header){
+      // Add to headers if it doesn't
+      headers.push(req.params.header);
+    }
+
+    data.settings.headers = headers;
+
+    data.save(err => {
+      if(err) return next(err);
+
+      res.send(data.settings.headers);
+    });
+  });
+});
 
 users.delete('/:username', (req, res, next) => {
   User.findOneAndRemove({username: {$regex: new RegExp('^'+req.params.username+'$', 'i')}}, (err, resp) => {
