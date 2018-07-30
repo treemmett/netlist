@@ -3,34 +3,30 @@ export default function(state={
   settings: {}
 }, action){
   switch(action.type){
-    case 'GET_SETTINGS_PENDING': {
-      state = {
-        ...state,
-        fetching: true
-      }
-      break;
-    }
-
     case 'GET_SETTINGS_FULFILLED': {
-      state = {
-        ...state,
-        settings: action.payload.data,
-        fetching: false
-      }
+      state = action.payload.data;
       break;
     }
 
-    case 'GET_SETTINGS_REJECTED': {
-      state = {
-        ...state,
-        fetching: false,
-        error: action.payload
+    case 'TOGGLE_HEADER': {
+      // Check if header already exists in array
+      if(state.headers.indexOf(action.payload) > -1){
+        state = {
+          ...state,
+          headers: state.headers.filter(item => item !== action.payload)
+        }
+      }else{
+        state = {
+          ...state,
+          headers: [...state.headers, action.payload]
+        }
       }
+
       break;
     }
 
     case 'SET_SETTINGS': {
-      state = {...state, settings: action.payload}
+      state = action.payload;
       break;
     }
 

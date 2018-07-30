@@ -6,7 +6,7 @@ import './Settings.scss';
 
 @connect(store => {
   return {
-    settings: store.settings.settings
+    settings: store.settings
   }
 })
 export default class extends Component{

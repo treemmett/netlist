@@ -21,7 +21,8 @@ import Sliders from '../svg/Sliders';
   return {
     admin: store.login.admin,
     servers: store.servers.data,
-    headers: store.servers.keys
+    headers: store.servers.keys,
+    selectedHeaders: store.settings.headers
   }
 })
 export default class ServerList extends Component{
@@ -96,7 +97,7 @@ export default class ServerList extends Component{
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
           <div className="spacer"/>
-          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={() => this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu headers={this.props.headers}/> : null}
+          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={() => this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu/> : null}
           </div>
           <div className="icon" onClick={this.download}><Download/></div>
         </div>
@@ -147,7 +148,7 @@ const Row = props => (
 
 @connect(store => {
   return {
-    dns: store.settings.settings.dns,
+    dns: store.settings.dns,
     servers: store.servers.data,
     locations: store.locations.data,
     purposes: store.purposes.data
@@ -438,12 +439,29 @@ class Modal extends Component{
   }
 }
 
+@connect(store => {
+  return {
+    headers: store.servers.keys,
+    selectedHeaders: store.settings.headers
+  }
+})
 class HeaderMenu extends Component{
+  update = e => {
+    // Update settings locally before sending request to server
+    this.props.dispatch({
+      type: 'TOGGLE_HEADER',
+      payload: e.target.name
+    });
+
+    axios.patch('/settings/headers/'+encodeURIComponent(e.target.name)).catch(axiosErrorHandler);
+  }
+
   render(){
+    console.log(this.props);
     // Render options
     let headers = Object.keys(this.props.headers).map((header, i) => (
       <div key={i} onClick={e => e.stopPropagation()} className="headerItem">
-        <input name={header} id={header} type="checkbox"/>
+        <input onChange={this.update} checked={this.props.selectedHeaders.indexOf(header) > -1} name={header} id={header} type="checkbox"/>
         <label htmlFor={header}>{this.props.headers[header]}</label>
       </div>
     ));
