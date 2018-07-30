@@ -302,7 +302,9 @@ class Modal extends Component{
       // Set servername to available index
       index = index.toString().padStart(3, '0');
       input.value = (location + purpose + index).toUpperCase();
-      document.getElementById('dnsName').value = (location + purpose + index).toLowerCase() + '.' + this.props.dns;
+      if(this.props.dns){ 
+        document.getElementById('dnsName').value = (location + purpose + index).toLowerCase() + '.' + this.props.dns;
+      }
     })
   }
 
@@ -311,7 +313,9 @@ class Modal extends Component{
     e.target.value = value;
 
     if(value.trim()){
-      document.getElementById('dnsName').value = value.toLowerCase()+'.'+this.props.dns;
+      if(this.props.dns){
+        document.getElementById('dnsName').value = value.toLowerCase()+'.'+this.props.dns;
+      }
     }else{
       document.getElementById('dnsName').value = '';
     }

@@ -16,7 +16,10 @@ export default class extends Component{
         <form className="section" onSubmit={e => {
           e.preventDefault();
 
-          axios.post('/settings', {dns: e.target.elements.dns.value}).then(res => {
+          axios({
+            method: e.target.elements.dns.value.trim() ? 'patch' : 'delete',
+            url: '/settings/dns/'+encodeURIComponent(e.target.elements.dns.value)
+          }).then(res => {
             toast('Settings saved');
             this.props.dispatch({
               type: 'SET_SETTINGS',
