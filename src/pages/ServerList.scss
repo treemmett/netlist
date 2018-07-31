@@ -29,6 +29,25 @@
     }
   }
 
+  th{
+    cursor: default;
+    user-select: none;
+
+    &.sort{
+      font-weight: 700;
+  
+      &::after{
+        display: inline;
+        color: #444;
+        content: ' ▲';
+      }
+  
+      &.inverse::after{
+        content: ' ▼';
+      }
+    }
+  }
+
   tr.retired td{
     color: lighten(#000, 80%);
   }

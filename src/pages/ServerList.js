@@ -33,6 +33,8 @@ export default class ServerList extends Component{
       modal: false,
       openServer: {applications: []},
       search: null,
+      sortingHeader: 'serverName',
+      inverseSort: false 
     }
   }
 
@@ -76,17 +78,27 @@ export default class ServerList extends Component{
     }).catch(axiosErrorHandler)
   }
 
+  changeSortingKey = key => {
+    if(key === this.state.sortingHeader){
+      // Invert sorting direction if key is already the sorter
+      this.setState({inverseSort: !this.state.inverseSort});
+    }else{
+      // Set new sorting key
+      this.setState({sortingHeader: key, inverseSort: false})
+    }
+  }
+
   render(){
-    // Push "Server" key to front if present
+    // Push "Server" key to front
     const headerKeys = this.props.selectedHeaders.slice(0);
     const index = headerKeys.indexOf('serverName');
     if(index > -1){
       headerKeys.splice(index, 1);
-      headerKeys.unshift('serverName');
     }
+    headerKeys.unshift('serverName');
 
     // Render headers
-    const headers = headerKeys.map((header, i) => <th key={i} title={this.props.headers[header]}>{this.props.headers[header]}</th>);
+    const headers = headerKeys.map((header, i) => <th className={classNames({sort: this.state.sortingHeader === header, inverse: this.state.sortingHeader === header && this.state.inverseSort})} key={i} title={this.props.headers[header]} onClick={() => this.changeSortingKey(header)}>{this.props.headers[header]}</th>);
 
     const mappedServers = this.props.servers.filter(server => {
       // Apply search filter
@@ -500,7 +512,7 @@ class HeaderMenu extends Component{
 
   render(){
     // Render options
-    let headers = Object.keys(this.props.headers).map((header, i) => (
+    let headers = Object.keys(this.props.headers).filter(header => header !== 'serverName').map((header, i) => (
       <div key={i} onClick={e => e.stopPropagation()} className="headerItem">
         <input onChange={this.update} checked={this.props.selectedHeaders.indexOf(header) > -1} name={header} id={header} type="checkbox"/>
         <label htmlFor={header}>{this.props.headers[header]}</label>
