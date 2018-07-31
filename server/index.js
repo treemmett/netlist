@@ -43,7 +43,7 @@ app.use(expJwt({
 app.use((req, res, next) => {
   // Check if a non admin is trying to make a modification
   if(req.user){
-    if(!req.user.admin && req.method !== 'GET'){
+    if(!req.user.admin && (req.method !== 'GET' && !/^\/api\/settings/.test(req.path))){
       res.status(403).send({error: ['You do not have permission to modify the requested resource']});
       return;
     }
