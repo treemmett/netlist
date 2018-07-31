@@ -370,6 +370,9 @@ form{
     font-weight: 500;
     font-size: 12px;
     text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   td{
@@ -379,6 +382,8 @@ form{
     font-weight: 300;
     font-size: 12px;
     border-bottom: solid 1px rgba(255,255,255,0.1);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

@@ -77,6 +77,17 @@ export default class ServerList extends Component{
   }
 
   render(){
+    // Push "Server" key to front if present
+    const headerKeys = this.props.selectedHeaders.slice(0);
+    const index = headerKeys.indexOf('serverName');
+    if(index > -1){
+      headerKeys.splice(index, 1);
+      headerKeys.unshift('serverName');
+    }
+
+    // Render headers
+    const headers = headerKeys.map((header, i) => <th key={i} title={this.props.headers[header]}>{this.props.headers[header]}</th>);
+
     const mappedServers = this.props.servers.filter(server => {
       // Apply search filter
       return !this.state.search || this.state.search.test(server.serverName) || this.state.search.test(server.applications);
@@ -87,17 +98,17 @@ export default class ServerList extends Component{
       return 0;
     }).map((server, i) => {
       // Render server
-      return <Row openDetails={this.openDetails} data={server} key={i}/>
+      return <Row headers={headerKeys} openDetails={this.openDetails} data={server} key={i}/>
     });
 
     return (
-      <div className="serverList page">
+      <div className="serverList page" onClick={() => this.setState({customizeHeadersMenu: false})}>
         {this.state.modal ? <Modal history={this.props.history} admin={this.props.admin} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
         <div className="actions">
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
           <div className="spacer"/>
-          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={() => this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu/> : null}
+          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={e => {e.stopPropagation(); this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu/> : null}
           </div>
           <div className="icon" onClick={this.download}><Download/></div>
         </div>
@@ -114,12 +125,7 @@ export default class ServerList extends Component{
             <div className="tbl-header">
               <table cellPadding="0" cellSpacing="0" border="0">
                 <thead>
-                  <tr>
-                    <th>Server</th>
-                    <th>Applications</th>
-                    <th>Last Updated</th>
-                    <th>Last Updater</th>
-                  </tr>
+                  <tr>{headers}</tr>
                 </thead>
               </table>
             </div>
@@ -137,14 +143,50 @@ export default class ServerList extends Component{
   }
 }
 
-const Row = props => (
-  <tr className={classNames('hover', {retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>
-    <td>{props.data.serverName}</td>
-    <td>{props.data.applications[0]}</td>
-    <td>{props.data.patchDate}</td>
-    <td>{props.data.updatedBy}</td>
-  </tr>
-);
+const Row = props => {
+  // Render columns
+  const col = props.headers.map((header, i) => {
+    let response = '';
+
+    switch(typeof props.data[header]){
+      case 'string': {
+        response = props.data[header];
+        break;
+      }
+
+      case 'boolean': {
+        if(props.data[header]){
+          response = '✔';
+        }
+        break;
+      }
+
+      case 'object': {
+        if(props.data[header] instanceof Array){
+          if(props.data[header].length === 1){
+            response = props.data[header][0];
+          }else{
+            response = props.data[header].length;
+          }
+        }else{
+          response = JSON.stringify(props.data[header]);
+        }
+        break;
+      }
+
+      default: {
+        response = props.data[header];
+        break;
+      }
+    }
+
+    return <td title={response} key={i}>{response}</td>
+  })
+
+  return (
+    <tr className={classNames('hover', {retired: props.data.retired})} onClick={e => props.openDetails(props.data.serverName)}>{col}</tr>
+  );
+}
 
 @connect(store => {
   return {
@@ -457,7 +499,6 @@ class HeaderMenu extends Component{
   }
 
   render(){
-    console.log(this.props);
     // Render options
     let headers = Object.keys(this.props.headers).map((header, i) => (
       <div key={i} onClick={e => e.stopPropagation()} className="headerItem">
@@ -467,7 +508,7 @@ class HeaderMenu extends Component{
     ));
 
     return (
-      <div className="headerMenu">
+      <div className="headerMenu" onClick={e => e.stopPropagation()}>
         {headers}
       </div>
     );

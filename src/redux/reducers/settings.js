@@ -1,6 +1,5 @@
 export default function(state={
-  fetching: false,
-  settings: {}
+  headers: []
 }, action){
   switch(action.type){
     case 'GET_SETTINGS_FULFILLED': {

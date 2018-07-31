@@ -1,6 +1,7 @@
 export default function(state={
   fetching: false,
-  data: []
+  data: [],
+  keys: []
 }, action){
   switch(action.type){
     case 'ADD_SERVER': {
