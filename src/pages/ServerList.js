@@ -88,6 +88,13 @@ export default class ServerList extends Component{
     }
   }
 
+  checkSort = key => {
+    // Change sorting column to server name if the selected is hidden
+    if(key === this.state.sortingHeader){
+      this.setState({sortingHeader: 'serverName', inverseSort: false})
+    }
+  }
+
   render(){
     // Push "Server" key to front
     const headerKeys = this.props.selectedHeaders.slice(0);
@@ -104,9 +111,17 @@ export default class ServerList extends Component{
       // Apply search filter
       return !this.state.search || this.state.search.test(server.serverName) || this.state.search.test(server.applications);
     }).sort((a, b) => {
-      // Sort servers by name
+      // Sort servers by name first, regardless of actual sorting key. This ensures the name is the backup sort in the event of a sort collision.
       if(a.serverName.toLowerCase() > b.serverName.toLowerCase()) return 1;
       if(a.serverName.toLowerCase() < b.serverName.toLowerCase()) return -1;
+      return 0;
+    }).sort((a, b) => {
+      // Sort by selected header
+      const itemA = a[this.state.sortingHeader] ? a[this.state.sortingHeader].toString().toLowerCase() : '';
+      const itemB = b[this.state.sortingHeader] ? b[this.state.sortingHeader].toString().toLowerCase() : '';
+
+      if(itemA > itemB) return this.state.inverseSort ? -1 : 1;
+      if(itemB > itemA) return this.state.inverseSort ? 1 : -1;
       return 0;
     }).map((server, i) => {
       // Render server
@@ -120,7 +135,7 @@ export default class ServerList extends Component{
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
           <div className="spacer"/>
-          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={e => {e.stopPropagation(); this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu/> : null}
+          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={e => {e.stopPropagation(); this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu checkSort={this.checkSort}/> : null}
           </div>
           <div className="icon" onClick={this.download}><Download/></div>
         </div>
@@ -501,6 +516,9 @@ class Modal extends Component{
 })
 class HeaderMenu extends Component{
   update = e => {
+    // Check if the selected header is the current sorting header
+    this.props.checkSort(e.target.name);
+
     // Update settings locally before sending request to server
     this.props.dispatch({
       type: 'TOGGLE_HEADER',
