@@ -8,7 +8,7 @@ const Console = props => {
   let applications = [];
   try{
     // Get each application in each server
-    const applicationsDirty = this.props.servers.map(obj => obj.applications);
+    const applicationsDirty = props.servers.map(obj => obj.applications);
     // Flatten array, removing duplicates
     applications = [...new Set(applicationsDirty.reduce((a,c) => a.concat(c).map(v => v.toLowerCase())))];
   }catch(e){/* Failed because first array is empty and *\
