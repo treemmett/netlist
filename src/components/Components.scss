@@ -48,7 +48,10 @@
   font-size: 12px;
   cursor: pointer;
   border-radius: 0.5rem;
-  padding: 0.7rem 1rem;
+  padding: 0 1rem;
+  height: 35px;
+  line-height: 35px;
+  white-space: nowrap;
   min-width: 80px;
   text-align: center;
   transition: background-color 0.2s ease-in-out;
@@ -174,6 +177,11 @@ form{
     border: 1px solid #ccc;
     outline: none;
     transition: border-color 0.1s linear;
+    
+    &.select{
+      appearance: none;
+      background: url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+) no-repeat 99% 50%;
+    }
 
     &:focus{
       border-color: darken(#ccc, 40%)
@@ -281,7 +289,7 @@ form{
     grid-column-end: 3;
   }
 
-  input:disabled, input:read-only, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox, select:disabled{
+  input:disabled, .btn:disabled, input[type=radio]:disabled.radio + label.radio, input[type=checkbox]:disabled.checkbox + label.checkbox, select:disabled{
     &, &:hover, &:active, &:focus{
       background-color: #eee;
       color: #888;

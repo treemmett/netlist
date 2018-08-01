@@ -2,6 +2,31 @@ const servers = require('express').Router();
 const mongoose = require('mongoose');
 const convertToCSV = require('../formatter/csv');
 
+const headers = {
+  applications: 'Applications',
+  backupDate: 'Last Backup Date',
+  cpu: 'CPU',
+  disks: 'Disks',
+  dnsName: 'DNS Name',
+  location: 'Location Code',
+  maintWin: 'Maintenance Window From',
+  maintWinTo: 'Maintenance Window To',
+  memory: 'Memory',
+  monitoring: 'Monitoring Enabled',
+  os: 'OS',
+  owner: 'Owner',
+  patchDate: 'Last Patch Date',
+  purpose: 'Purpose Code',
+  serverName: 'Server Name',
+  serverType: 'Server Type',
+  retired: 'Retired',
+  site: 'Site',
+  updatedBy: 'Last Updated By',
+  url: 'URL',
+  virtualization: 'Virtualization',
+  vlan: 'VLAN'
+}
+
 const serverSchema = mongoose.Schema({
   applications: [{type: String}],
   backupDate: {type: String, trim: true},
@@ -80,30 +105,7 @@ servers.get('/', (req, res, next) => {
     }
 
     if(/text\/csv/i.test(req.headers.accept)){
-      res.set('Content-Type', 'text/csv').send(convertToCSV(data, 'serverName', {
-        serverName: 'Server Name',
-        applications: 'Applications',
-        backupDate: 'Last Backup Date',
-        cpu: 'CPU',
-        disks: 'Disks',
-        dnsName: 'DNS Name',
-        location: 'Location Code',
-        maintWin: 'Maintenance Window From',
-        maintWinTo: 'Maintenance Window To',
-        memory: 'Memory',
-        monitoring: 'Monitoring',
-        os: 'OS',
-        owner: 'Owner',
-        patchDate: 'Last Patch Date',
-        purpose: 'Purpose Code',
-        serverType: 'Server Type',
-        site: 'Site',
-        retired: 'Retired',
-        updatedBy: 'Last Updated By',
-        url: 'URL',
-        virtualization: 'Virtualization Type',
-        vlan: 'VLAN'
-      }));
+      res.set('Content-Type', 'text/csv').send(convertToCSV(data, 'serverName', headers));
       return;
     }
 
@@ -131,30 +133,7 @@ servers.post('/', (req, res, next) => {
 servers.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
 servers.get('/keys', (req, res, next) => {
-  res.send({
-    applications: 'Applications',
-    backupDate: 'Last Backup Date',
-    cpu: 'CPU',
-    disks: 'Disks',
-    dnsName: 'DNS Name',
-    location: 'Location Code',
-    maintWin: 'Maintenance Window From',
-    maintWinTo: 'Maintenance Window To',
-    memory: 'Memory',
-    monitoring: 'Monitoring Enabled',
-    os: 'OS',
-    owner: 'Owner',
-    patchDate: 'Last Patch Date',
-    purpose: 'Purpose Code',
-    serverName: 'Server Name',
-    serverType: 'Server Type',
-    retired: 'Retired',
-    site: 'Site',
-    updatedBy: 'Last Updated By',
-    url: 'URL',
-    virtualization: 'Virtualization',
-    vlan: 'VLAN'
-  });
+  res.send(headers);
 });
 
 servers.delete('/:serverName', (req, res,next) => {
