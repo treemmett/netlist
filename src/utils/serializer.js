@@ -45,19 +45,23 @@ function serialize(form, options) {
 
         // we can't just use element.value for checkboxes cause some browsers lie to us
         // they say "on" for value when the box isn't checked
-        if ((element.type === 'checkbox' || element.type === 'radio') && !element.checked) {
+        if (element.type === 'checkbox' && !element.checked) {
+            val = false;
+        }
+
+        if (element.type === 'radio' && !element.checked) {
             val = undefined;
         }
 
         if(element.type === 'checkbox'){
-          val = element.checked;
+            val = element.checked;
         }
 
         // If we want empty elements
         if (options.empty) {
             // for checkbox
             if (element.type === 'checkbox' && !element.checked) {
-                val = '';
+                val = false;
             }
 
             // for radio
@@ -77,7 +81,7 @@ function serialize(form, options) {
         }
         else {
             // value-less fields are ignored unless options.empty is true
-            if (!val) {
+            if (!val && element.type !== 'checkbox') {
                 continue;
             }
         }
