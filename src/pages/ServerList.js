@@ -32,7 +32,7 @@ export default class ServerList extends Component{
     this.state = {
       customizeHeadersMenu: false,
       modal: false,
-      openServer: {applications: []},
+      openServer: {},
       search: null,
       sortingHeader: 'serverName',
       inverseSort: false 
@@ -131,7 +131,7 @@ export default class ServerList extends Component{
 
     return (
       <div className="serverList page" onClick={() => this.setState({customizeHeadersMenu: false})}>
-        {this.state.modal ? <Modal history={this.props.history} admin={this.props.admin} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {applications: []}})}/> : null}
+        {this.state.modal ? <Modal history={this.props.history} admin={this.props.admin} data={this.state.openServer} close={e => this.setState({modal: false, openServer: {}})}/> : null}
         <div className="actions">
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
@@ -230,24 +230,13 @@ const Row = props => {
 class Modal extends Component{
   constructor(props){
     super(props);
+
+    // Create unique ID's for every dynamic field element
+    const applications = this.props.data.applications ? this.props.data.applications.map(el => { return {id: performance.now() * Math.random(), value: el}}) : [];
+
     this.state = {
-      appInputs: [],
+      applications: applications.length ? applications : [{id: performance.now(), value: ''}],
       disabled: false
-    }
-
-    this.totalApps = 0;
-
-    // Add application inputs
-    // We're skipping the first item
-    // because this is handled in the render
-    for(let i = 1; i < this.props.data.applications.length; i++){
-      const curI = this.totalApps;
-      this.totalApps++;
-
-      this.state.appInputs.push(<React.Fragment key={curI}>
-        <input type="text" id={'applications_'+(curI+1)} name="applications[]" defaultValue={this.props.data.applications[i]}/>
-        <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
-      </React.Fragment>);
     }
   }
 
@@ -270,33 +259,6 @@ class Modal extends Component{
       toast(errors);
       this.props.history.push('/namekey');
     }
-  }
-
-  addApp = e => {
-    // Skip if form is locked
-    if(this.state.disabled) return;
-
-    const appInputs = this.state.appInputs.slice(0);
-    const curI = this.totalApps;
-    this.totalApps++;
-
-    appInputs.push(<React.Fragment key={curI}>
-      <input type="text" id={'applications_'+(curI+1)} name="applications[]"/>
-      <div className="icon click" onClick={e => this.removeApp(curI)}><MinusCircle/></div>
-    </React.Fragment>);
-
-    this.setState({appInputs: appInputs});
-  }
-
-  removeApp = key => {
-    // Skip if form is locked
-    if(this.state.disabled) return;
-    
-    const appInputs = this.state.appInputs.slice(0);
-    const curInput = appInputs.find(obj => obj.key === key.toString());
-    const index = appInputs.indexOf(curInput);
-    appInputs.splice(index, 1);
-    this.setState({appInputs: appInputs});
   }
 
   save = e => {
@@ -342,6 +304,24 @@ class Modal extends Component{
 
       this.props.close();
     }).catch(axiosErrorHandler);
+  }
+
+  addDynamicField = field => {
+    const fields = [...this.state[field]];
+
+    fields.push({id: performance.now(), value: ''});
+
+    this.setState({[field]: fields});
+  }
+
+  removeDynamicField = (field, id) => {
+    const fields = [...this.state[field]];
+
+    const index = fields.findIndex(obj => obj.id === id);
+
+    fields.splice(index, 1);
+
+    this.setState({[field]: fields});
   }
 
   findNext = () => {
@@ -408,6 +388,17 @@ class Modal extends Component{
     const purposes = [<option key="0" value="" disabled/>].concat(this.props.purposes.map(i => {
       return <option key={i.code} value={i.code} label={i.description}/>
     }));
+
+    const applications = this.state.applications.map((obj, i) => {
+      return (
+        <React.Fragment key={obj.id}>
+          <input type="text" name="applications[]" id={obj.id} defaultValue={obj.value}/>
+          <div className="icon click" onClick={i > 0 ? () => this.removeDynamicField('applications', obj.id) : () => this.addDynamicField('applications')}>
+            {i > 0 ? <MinusCircle/> : <PlusCircle/>}
+          </div>
+        </React.Fragment>
+      );
+    });
 
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
@@ -497,10 +488,8 @@ class Modal extends Component{
               <label htmlFor="applicationOwner">Application Owner</label>
               <input type="text" id="applicationOwner" name="applicationOwner" defaultValue={this.props.data.applicationOwner}/>
 
-              <label htmlFor="applications">Applications</label>
-              <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>
-              <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
-              {this.state.appInputs}
+              <label htmlFor={this.state.applications[0].id}>Applications</label>
+              {applications}
 
               <label htmlFor="notes" className="notesLabel">Notes</label>
               <textarea ref={c => this.notesField = c} name="notes" id="notes" defaultValue={this.props.data.notes}/>
