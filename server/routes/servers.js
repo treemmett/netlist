@@ -19,7 +19,7 @@ const headers = {
   patchDate: 'Last Patch Date',
   purpose: 'Purpose Code',
   serverName: 'Server Name',
-  serverSme: 'Server SME',
+  serverSmes: 'SME\'s',
   serverType: 'Server Type',
   retired: 'Retired',
   updatedBy: 'Last Updated By',
@@ -76,7 +76,7 @@ const serverSchema = mongoose.Schema({
     trim: true,
     uppercase: true,
   },
-  serverSme: {type: String, trim: true},
+  serverSmes: {type: [String], trim: true},
   serverType: {
     type: String,
     enum: ['appliance', 'server'],

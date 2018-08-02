@@ -233,9 +233,11 @@ class Modal extends Component{
 
     // Create unique ID's for every dynamic field element
     const applications = this.props.data.applications ? this.props.data.applications.map(el => { return {id: performance.now() * Math.random(), value: el}}) : [];
+    const serverSmes = this.props.data.serverSmes ? this.props.data.serverSmes.map(el => { return {id: performance.now() * Math.random(), value: el}}) : [];
 
     this.state = {
       applications: applications.length ? applications : [{id: performance.now(), value: ''}],
+      serverSmes: serverSmes.length ? serverSmes : [{id: performance.now(), value: ''}],
       disabled: false
     }
   }
@@ -389,16 +391,24 @@ class Modal extends Component{
       return <option key={i.code} value={i.code} label={i.description}/>
     }));
 
-    const applications = this.state.applications.map((obj, i) => {
-      return (
-        <React.Fragment key={obj.id}>
-          <input type="text" name="applications[]" id={obj.id} defaultValue={obj.value}/>
-          <div className="icon click" onClick={i > 0 ? () => this.removeDynamicField('applications', obj.id) : () => this.addDynamicField('applications')}>
-            {i > 0 ? <MinusCircle/> : <PlusCircle/>}
-          </div>
-        </React.Fragment>
-      );
-    });
+    // Render dynamic fields
+    const applications = this.state.applications.map((obj, i) => (
+      <React.Fragment key={obj.id}>
+        <input type="text" name="applications[]" id={obj.id} defaultValue={obj.value}/>
+        <div className="icon click" onClick={i > 0 ? () => this.removeDynamicField('applications', obj.id) : () => this.addDynamicField('applications')}>
+          {i > 0 ? <MinusCircle/> : <PlusCircle/>}
+        </div>
+      </React.Fragment>
+    ));
+
+    const serverSmes = this.state.serverSmes.map((obj, i) => (
+      <React.Fragment key={obj.id}>
+        <input type="text" name="serverSmes[]" id={obj.id} defaultValue={obj.value}/>
+        <div className="icon click" onClick={i > 0 ? () => this.removeDynamicField('serverSmes', obj.id) : () => this.addDynamicField('serverSmes')}>
+          {i > 0 ? <MinusCircle/> : <PlusCircle/>}
+        </div>
+      </React.Fragment>
+    ));
 
     return (
       <div className="modal" onClick={this.state.disabled ? null : this.props.close}>
@@ -419,8 +429,8 @@ class Modal extends Component{
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
 
-              <label htmlFor="serverSme">Server SME</label>
-              <input type="text" id="serverSme" name="serverSme" defaultValue={this.props.data.serverSme}/>
+              <label htmlFor={this.state.serverSmes[0].id}>SME's</label>
+              {serverSmes}
 
               <label htmlFor="os">OS</label>
               <input type="text" id="os" name="os" defaultValue={this.props.data.os}/>
@@ -481,7 +491,7 @@ class Modal extends Component{
               <input className="checkbox" type="checkbox" id="monitoring" name="monitoring" defaultChecked={this.props.data.monitoring}/>
               <label className="checkbox icon" htmlFor="monitoring"><Check/></label>
 
-              <label htmlFor="monitoring">Retired</label>
+              <label htmlFor="retired">Retired</label>
               <input className="checkbox" type="checkbox" id="retired" name="retired" defaultChecked={this.props.data.retired}/>
               <label className="checkbox icon" htmlFor="retired"><Check/></label>
 
