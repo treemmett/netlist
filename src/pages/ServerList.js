@@ -97,8 +97,8 @@ export default class ServerList extends Component{
   }
 
   render(){
-    // Push "Server" key to front
-    const headerKeys = this.props.selectedHeaders.slice(0);
+    // Push "Server" key to front, filter any invalid header
+    const headerKeys = this.props.selectedHeaders.slice(0).filter(header => this.props.headers[header]);
     const index = headerKeys.indexOf('serverName');
     if(index > -1){
       headerKeys.splice(index, 1);
@@ -175,6 +175,7 @@ const Row = props => {
   // Render columns
   const col = props.headers.map((header, i) => {
     let response = '';
+    let title = '';
 
     switch(typeof props.data[header]){
       case 'string': {
@@ -191,11 +192,13 @@ const Row = props => {
 
       case 'object': {
         if(props.data[header] instanceof Array){
-          if(props.data[header].length === 1){
-            response = props.data[header][0];
-          }else{
-            response = props.data[header].length;
+          response = props.data[header].length;
+
+          if(props.data[header][0]){
+            response += ': '+props.data[header][0];
           }
+
+          title = props.data[header].join(',\n');
         }else{
           response = JSON.stringify(props.data[header]);
         }
@@ -208,7 +211,7 @@ const Row = props => {
       }
     }
 
-    return <td title={response} key={i}>{response}</td>
+    return <td title={title || response} key={i}>{response}</td>
   })
 
   return (
