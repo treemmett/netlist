@@ -13,6 +13,7 @@ const headers = {
   maintWinTo: 'Maintenance Window To',
   memory: 'Memory',
   monitoring: 'Monitoring Enabled',
+  notes: 'Notes',
   os: 'OS',
   owner: 'Owner',
   patchDate: 'Last Patch Date',
@@ -51,6 +52,7 @@ const serverSchema = mongoose.Schema({
   maintWinTo: {type: String, trim: true},
   memory: {type: String, trim: true},
   monitoring: Boolean,
+  notes: {type: String, trim: true},
   os: {type: String, trim: true},
   owner: {type: String, trim: true},
   patchDate: {type: String, trim: true},
@@ -183,6 +185,7 @@ servers.put('/:serverName', (req, res, next) => {
 servers.all('/:serverName', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = {
+  keys: headers,
   route: servers,
   schema: Server
 }

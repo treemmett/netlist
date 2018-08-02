@@ -1,6 +1,7 @@
 const users = require('express').Router();
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const serverHeaders = require('./servers').keys;
 
 const schema = mongoose.Schema({
   username: {
@@ -39,30 +40,7 @@ const schema = mongoose.Schema({
       default: ['applications', 'serverName'],
       enum: {
         message: '{VALUE} is not a valid header.',
-        values: [
-          'applications',
-          'backupDate',
-          'cpu',
-          'disks',
-          'dnsName',
-          'location',
-          'maintWin',
-          'maintWinTo',
-          'memory',
-          'monitoring',
-          'os',
-          'owner',
-          'patchDate',
-          'purpose',
-          'serverName',
-          'serverType',
-          'retired',
-          'site',
-          'updatedBy',
-          'url',
-          'virtualization',
-          'vlan'
-        ]
+        values: Object.keys(serverHeaders)
       }
     }
   }

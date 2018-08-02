@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import axiosErrorHandler from '../utils/axiosErrorHandler';
+import autosize from 'autosize';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
@@ -248,6 +249,9 @@ class Modal extends Component{
   }
 
   componentDidMount(){
+    // Resize notes field
+    autosize(this.notesField);
+
     // Check if purposes and locations are set
     const errors = [];
     if(!this.props.locations.length){
@@ -494,6 +498,9 @@ class Modal extends Component{
               <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>
               <div className="icon click" onClick={this.addApp}><PlusCircle/></div>
               {this.state.appInputs}
+
+              <label htmlFor="notes" className="notesLabel">Notes</label>
+              <textarea ref={c => this.notesField = c} name="notes" id="notes" defaultValue={this.props.data.notes}/>
 
               <div className="actions">
                 <input onClick={this.props.close} className="btn secondary" type="button" value={this.props.admin ? 'Cancel' : 'Close'}/>

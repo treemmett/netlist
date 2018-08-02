@@ -166,9 +166,13 @@ form{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &.notesLabel{
+      align-self: start;
+    }
   }
 
-  input[type=text], input[type=date], input[type=number], input[type=time], input[type=password], select.select{
+  input[type=text], input[type=date], input[type=number], input[type=time], input[type=password], select.select, textarea{
     background-color: #fff;
     display: inline-block;
     grid-column: 2;
@@ -191,6 +195,11 @@ form{
       display: none;
       -webkit-appearance: none;
     }
+  }
+
+  textarea{
+    resize: vertical;
+    min-height: 50px;
   }
 
   input[type=checkbox].checkbox{
@@ -390,6 +399,7 @@ form{
     font-weight: 300;
     font-size: 12px;
     border-bottom: solid 1px rgba(255,255,255,0.1);
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
