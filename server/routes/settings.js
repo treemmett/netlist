@@ -1,3 +1,4 @@
+const serverKeys = require('./servers').keys;
 const settings = require('express').Router();
 const User = require('./users').schema;
 
@@ -42,7 +43,9 @@ settings.patch('/headers/:header', (req, res, next) => {
 
     // Add every current header to new object
     // This prevents default headers from erasing if the user hasn't set an option before
-    const headers = [...data.settings.headers];
+    const headers = [...data.settings.headers]
+    // Filter any header that isn't recognized by the schema
+    .filter(header => serverKeys[header]);
 
     // Remove header if it exists
     const index = headers.indexOf(req.params.header);

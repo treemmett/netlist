@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const convertToCSV = require('../formatter/csv');
 
 const headers = {
+  applicationOwner: 'Application Owner',
   applications: 'Applications',
   backupDate: 'Last Backup Date',
   cpu: 'CPU',
@@ -15,13 +16,12 @@ const headers = {
   monitoring: 'Monitoring Enabled',
   notes: 'Notes',
   os: 'OS',
-  owner: 'Owner',
   patchDate: 'Last Patch Date',
   purpose: 'Purpose Code',
   serverName: 'Server Name',
+  serverSme: 'Server SME',
   serverType: 'Server Type',
   retired: 'Retired',
-  site: 'Site',
   updatedBy: 'Last Updated By',
   url: 'URL',
   virtualization: 'Virtualization',
@@ -29,6 +29,7 @@ const headers = {
 }
 
 const serverSchema = mongoose.Schema({
+  applicationOwner: {type: String, trim: true},
   applications: [{type: String}],
   backupDate: {type: String, trim: true},
   cpu: {type: String, trim: true},
@@ -54,7 +55,6 @@ const serverSchema = mongoose.Schema({
   monitoring: Boolean,
   notes: {type: String, trim: true},
   os: {type: String, trim: true},
-  owner: {type: String, trim: true},
   patchDate: {type: String, trim: true},
   purpose: {
     type: String,
@@ -76,13 +76,13 @@ const serverSchema = mongoose.Schema({
     trim: true,
     uppercase: true,
   },
+  serverSme: {type: String, trim: true},
   serverType: {
     type: String,
     enum: ['appliance', 'server'],
     trim: true
   },
   retired: {type: Boolean},
-  site: {type: String, trim: true},
   updatedBy: {type: String, trim: true},
   url: {type: String, trim: true},
   virtualization: {

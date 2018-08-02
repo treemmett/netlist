@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 
 // Connect to database
 const url = 'mongodb://'+config.database.host+':'+config.database.port+'/'+config.database.db;
-mongoose.connect(url);
+mongoose.connect(url, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error);

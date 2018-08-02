@@ -428,8 +428,8 @@ class Modal extends Component{
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
 
-              <label htmlFor="site">Site</label>
-              <input type="text" id="site" name="site" defaultValue={this.props.data.site}/>
+              <label htmlFor="serverSme">Server SME</label>
+              <input type="text" id="serverSme" name="serverSme" defaultValue={this.props.data.serverSme}/>
 
               <label htmlFor="os">OS</label>
               <input type="text" id="os" name="os" defaultValue={this.props.data.os}/>
@@ -465,9 +465,6 @@ class Modal extends Component{
                 <input onChange={e => parseText(e, {type: 'time'})} type="text" id="maintWinTo" name="maintWinTo" size="4" defaultValue={this.props.data.maintWinTo}/>
               </div>
 
-              <label htmlFor="owner">Owner</label>
-              <input type="text" id="owner" name="owner" defaultValue={this.props.data.owner}/>
-
               <label htmlFor="url">Application URL</label>
               <input type="text" id="url" name="url" defaultValue={this.props.data.url}/>
 
@@ -496,6 +493,9 @@ class Modal extends Component{
               <label htmlFor="monitoring">Retired</label>
               <input className="checkbox" type="checkbox" id="retired" name="retired" defaultChecked={this.props.data.retired}/>
               <label className="checkbox icon" htmlFor="retired"><Check/></label>
+
+              <label htmlFor="applicationOwner">Application Owner</label>
+              <input type="text" id="applicationOwner" name="applicationOwner" defaultValue={this.props.data.applicationOwner}/>
 
               <label htmlFor="applications">Applications</label>
               <input type="text" id="applications" name="applications[]" defaultValue={this.props.data.applications[0]}/>
