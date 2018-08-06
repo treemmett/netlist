@@ -1,6 +1,5 @@
 const auth = require('express').Router();
 const User = require('./users').schema;
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const ldap = require('ldapjs');
 
@@ -70,7 +69,7 @@ auth.post('/', (req, res, next) => {
           timeout: 5000,
           connectTimeout: 10000
         });
-        console.log(foundObject.dn);
+
         userClient.bind(foundObject.dn, req.body.password, err => {
           if(err){
             // Check if error happened due to password error
@@ -99,22 +98,26 @@ auth.post('/', (req, res, next) => {
             return;
           }
 
-          // Create signed token
-          jwt.sign({
-            username: foundObject.sAMAccountName,
-            admin: accessGroups.findIndex(group => regRW.test(group)) > -1
-          },
-          config.token.secret,
-          {
-            expiresIn: config.token.expiresIn
-          },
-          (err, token) => {
+          // Create user in database if it doesn't exist
+          User.findOneAndUpdate({username: foundObject.sAMAccountName}, {lastLogin: Date.now()}, {upsert: true, new: true, setDefaultsOnInsert: true}, (err, model) => {
             if(err) return next(err);
 
-            res.set('X-Auth-Token', token).end();
+            // Create signed token
+            jwt.sign({
+              username: foundObject.sAMAccountName,
+              admin: accessGroups.findIndex(group => regRW.test(group)) > -1
+            },
+            config.token.secret,
+            {
+              expiresIn: config.token.expiresIn
+            },
+            (err, token) => {
+              if(err) return next(err);
+
+              res.set('X-Auth-Token', token).end();
+            });
           });
         });
-
       });
     });
   });

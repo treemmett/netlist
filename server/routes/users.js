@@ -11,27 +11,8 @@ const schema = mongoose.Schema({
     lowercase: true,
     unique: true
   },
-  hash: {
-    type: String,
-    required: true
-  },
-  createdAt: {
-    type: Number,
-    required: true,
-    default: Math.floor(Date.now() / 1000)
-  },
-  createdBy: {
-    type: String,
-    trim: true
-  },
   lastLogin: {
-    type: Number,
-    required: true,
-    default: 0
-  },
-  admin: {
-    type: Boolean,
-    default: false
+    type: Date
   },
   settings: {
     dns: {type: String, trim: true},
