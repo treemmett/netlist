@@ -6,12 +6,7 @@ const errorHandler = require('./errorHandler');
 const app = express();
 
 // Load configuration
-let config;
-try{
-  config = require('./config.json');
-}catch(e){
-  config = require('./config.default.json');
-}
+require('dotenv').config();
 
 // Configure app settings
 app.use(express.json());
@@ -33,7 +28,7 @@ app.use((req, res, next) => {
 
 // Require a valid token
 app.use(expJwt({
-  secret: config.token.secret
+  secret: process.env.JWT_SECRET
 }).unless({
   path: [
     /\/api\/auth\/?$/
@@ -52,7 +47,7 @@ app.use((req, res, next) => {
 });
 
 // Connect to database
-const url = 'mongodb://'+config.database.host+':'+config.database.port+'/'+config.database.db;
+const url = 'mongodb://'+process.env.DB_HOST+':'+process.env.DB_PORT+'/'+process.env.DB_NAME;
 mongoose.connect(url, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;

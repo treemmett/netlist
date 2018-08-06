@@ -3,14 +3,6 @@ const User = require('../schemas/Users');
 const jwt = require('jsonwebtoken');
 const ldap = require('ldapjs');
 
-// Load configuration
-let config;
-try{
-  config = require('../config.json');
-}catch(e){
-  config = require('../config.default.json');
-}
-
 auth.post('/', (req, res, next) => {
   // Throw if username or password wasn't sent
   if(!req.body.username || !req.body.password){
@@ -26,19 +18,19 @@ auth.post('/', (req, res, next) => {
 
   // Connect to LDAP
   const client = ldap.createClient({
-    url: config.ldap.url,
+    url: process.env.LDAP_URL,
     timeout: 5000,
     connectTimeout: 10000
   });
 
-  client.bind(config.ldap.username, config.ldap.password, err => {
+  client.bind(process.env.LDAP_USER, process.env.LDAP_PASS, err => {
     if(err){
       client.unbind();
 
       return next(err);
     }
 
-    client.search(config.ldap.cn, opts, (err, search) => {
+    client.search(process.env.LDAP_CN, opts, (err, search) => {
       let foundObject = null;
 
       search.on('searchEntry', entry => {
@@ -65,7 +57,7 @@ auth.post('/', (req, res, next) => {
 
         // Create a new connection for user credentials
         const userClient = ldap.createClient({
-          url: config.ldap.url,
+          url: process.env.LDAP_URL,
           timeout: 5000,
           connectTimeout: 10000
         });
@@ -87,8 +79,8 @@ auth.post('/', (req, res, next) => {
           }
         
           // User authentication succeeded. Now check if user has the necessary groups
-          const regRO = new RegExp('^cn='+config.ldap.groups.ro, 'i');
-          const regRW = new RegExp('^cn='+config.ldap.groups.rw, 'i');
+          const regRO = new RegExp('^cn='+process.env.LDAP_RO_GROUP, 'i');
+          const regRW = new RegExp('^cn='+process.env.LDAP_RW_GROUP, 'i');
 
           const accessGroups = foundObject.memberOf.filter(group => regRO.test(group) || regRW.test(group));
 
@@ -107,9 +99,9 @@ auth.post('/', (req, res, next) => {
               username: foundObject.sAMAccountName,
               admin: accessGroups.findIndex(group => regRW.test(group)) > -1
             },
-            config.token.secret,
+            process.env.JWT_SECRET,
             {
-              expiresIn: config.token.expiresIn
+              expiresIn: process.env.JWT_EXPIRE
             },
             (err, token) => {
               if(err) return next(err);

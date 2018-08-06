@@ -5,7 +5,7 @@
 /coverage
 
 # app configurations
-/server/config.json
+.env
 
 # production
 /build
