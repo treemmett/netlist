@@ -1,36 +1,6 @@
 const users = require('express').Router();
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
-const serverHeaders = require('./servers').keys;
-
-const schema = mongoose.Schema({
-  username: {
-    type: String,
-    trim: true,
-    required: true,
-    lowercase: true,
-    unique: true
-  },
-  lastLogin: {
-    type: Date
-  },
-  settings: {
-    dns: {type: String, trim: true},
-    headers: {
-      type: [String],
-      default: ['applications', 'serverName'],
-      enum: {
-        message: '{VALUE} is not a valid header.',
-        values: Object.keys(serverHeaders)
-      }
-    }
-  }
-});
-schema.pre('findOneAndUpdate', function(next){
-  this.options.runValidators = true;
-  next();
-});
-const User = mongoose.model('Users', schema);
+const User = require('../schemas/Users');
 
 users.get('/', (req, res, next) => {
   // Get users from database
@@ -147,10 +117,7 @@ users.put('/:username', (req, res, next) => {
 });
 users.all('/:username', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
-module.exports = {
-  route: users,
-  schema: User
-};
+module.exports = users;
 
 // Setup default user on start if none exist
 User.find({}, {_id: 0, __v: 0, hash: 0}, (err, data) => {

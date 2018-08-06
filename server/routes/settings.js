@@ -1,6 +1,6 @@
-const serverKeys = require('./servers').keys;
+const serverKeys = require('../schemas/Servers').keys;
 const settings = require('express').Router();
-const User = require('./users').schema;
+const User = require('../schemas/Users');
 
 settings.get('/', (req, res, next) => {
   User.findOne({username: req.user.username}, {settings: 1}, (err, data) => {

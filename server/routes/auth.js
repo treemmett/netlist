@@ -1,5 +1,5 @@
 const auth = require('express').Router();
-const User = require('./users').schema;
+const User = require('../schemas/Users');
 const jwt = require('jsonwebtoken');
 const ldap = require('ldapjs');
 
