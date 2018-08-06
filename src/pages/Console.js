@@ -24,13 +24,6 @@ const Console = props => {
       </div>
 
       <div className="module">
-        <div className="title">Users</div>
-        <div className="content">
-          <span className="big">{props.users.length}</span>
-        </div>
-      </div>
-
-      <div className="module">
         <div className="title">Applications</div>
         <div className="content">
           <span className="big">{applications.length}</span>
@@ -58,7 +51,6 @@ export default connect(store => {
   return {
     locations: store.locations.data,
     purposes: store.purposes.data,
-    servers: store.servers.data,
-    users: store.users.data
+    servers: store.servers.data
   }
 })(Console);

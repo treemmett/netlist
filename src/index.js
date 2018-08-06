@@ -20,7 +20,6 @@ import NameKey from './pages/NameKey';
 import ServerList from './pages/ServerList';
 import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
-import Users from './pages/Users';
 
 // Configure global API settings
 axios.defaults.baseURL = '/api';
@@ -51,6 +50,7 @@ axios.interceptors.response.use(null, error => {
   if(error.response.status === 401){
     if(!/\/login\/?$/i.test(window.location.pathname)){
       //Remove login data
+      localStorage.clear();
       store.dispatch({
         type: 'RESET_LOGIN'
       });
@@ -102,7 +102,6 @@ const Render = () => (
         <PrivateRoute exact path="/" component={Console}/>
         <PrivateRoute exact path="/servers" component={ServerList}/>
         <PrivateRoute exact path="/namekey" component={NameKey}/>
-        <PrivateRoute exact path="/users" component={Users}/>
         <PrivateRoute exact path="/settings" component={Settings}/>
 
         <Route exact path="/login" component={Login}/>

@@ -26,12 +26,6 @@ function checkIfLoggedIn(){
       payload: axios.get('/servers/keys')
     });
 
-    // Fetch users
-    store.dispatch({
-      type: 'GET_USERS',
-      payload: axios.get('/users')
-    });
-
     // Fetch locations
     store.dispatch({
       type: 'GET_LOCATIONS',
