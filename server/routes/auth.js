@@ -70,6 +70,8 @@ auth.post('/', (req, res, next) => {
               return;
             }
 
+            userClient.unbind();
+
             return next(err);
           }
 
@@ -87,12 +89,18 @@ auth.post('/', (req, res, next) => {
           if(!accessGroups.length){
             // User authentication suceeded, but doesn't have permissions
             res.status(403).send({error: ['You do not have permission to access this page.']});
+            userClient.unbind();
+            client.unbind();
             return;
           }
 
           // Create user in database if it doesn't exist
           User.findOneAndUpdate({username: foundObject.sAMAccountName}, {lastLogin: Date.now()}, {upsert: true, new: true, setDefaultsOnInsert: true}, (err, model) => {
-            if(err) return next(err);
+            if(err){
+              userClient.unbind();
+              client.unbind();
+              return next(err);
+            }
 
             // Create signed token
             jwt.sign({
@@ -104,7 +112,11 @@ auth.post('/', (req, res, next) => {
               expiresIn: process.env.JWT_EXPIRE
             },
             (err, token) => {
-              if(err) return next(err);
+              if(err){
+                userClient.unbind();
+                client.unbind();
+                return next(err);
+              }
 
               res.set('X-Auth-Token', token).end();
             });

@@ -16,6 +16,13 @@ app.use(bodyparser.json());
 app.on('uncaughtException', console.error);
 app.on('uncaughtRejection', console.error);
 
+// Don't crash on LDAP disconnect
+process.on('uncaughtException', err => {
+  if(err.code !== "ECONNRESET"){
+   process.exit;
+  }
+});
+
 // Configure default headers
 app.set('etag', false);
 app.use((req, res, next) => {
