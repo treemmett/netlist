@@ -382,13 +382,21 @@ class Modal extends Component{
 
   render(){
     // Render all locations
-    const locations = [<option key="0" value="" disabled/>].concat(this.props.locations.map(i => {
-      return <option key={i.code} value={i.code} label={i.description}/>
+    const locations = [<option key="0" value="" disabled/>].concat(this.props.locations.sort((a, b) => {
+      if(a.code > b.code) return 1;
+      if(a.code < b.code) return -1;
+      return 0;
+    }).map(i => {
+      return <option key={i.code} value={i.code}>{i.code + ' - ' + i.description}</option>
     }));
 
     // Render all purposes
-    const purposes = [<option key="0" value="" disabled/>].concat(this.props.purposes.map(i => {
-      return <option key={i.code} value={i.code} label={i.description}/>
+    const purposes = [<option key="0" value="" disabled/>].concat(this.props.purposes.sort((a, b) => {
+      if(a.code > b.code) return 1;
+      if(a.code < b.code) return -1;
+      return 0;
+    }).map(i => {
+      return <option key={i.code} value={i.code}>{i.code + ' - ' + i.description}</option>
     }));
 
     // Render dynamic fields
