@@ -23,7 +23,9 @@ import Sliders from '../svg/Sliders';
     admin: store.login.admin,
     servers: store.servers.data,
     headers: store.servers.keys,
-    selectedHeaders: store.settings.headers
+    selectedHeaders: store.settings.headers,
+    locations: store.locations.data,
+    purposes: store.purposes.data
   }
 })
 export default class ServerList extends Component{
@@ -126,7 +128,7 @@ export default class ServerList extends Component{
       return 0;
     }).map((server, i) => {
       // Render server
-      return <Row headers={headerKeys} openDetails={this.openDetails} data={server} key={i}/>
+      return <Row headers={headerKeys} location={this.props.locations} purpose={this.props.purposes} openDetails={this.openDetails} data={server} key={i}/>
     });
 
     return (
@@ -179,6 +181,10 @@ const Row = props => {
 
     switch(typeof props.data[header]){
       case 'string': {
+        if(/\$value$/.test(props.data[header])){
+          break;
+        }
+
         response = props.data[header];
         break;
       }
@@ -208,6 +214,18 @@ const Row = props => {
       default: {
         response = props.data[header];
         break;
+      }
+    }
+
+    if(/\$value$/.test(header)){
+      const match = header.match(/(.+)\$value$/)[1]
+
+      const found = props[match].find(obj => obj.code === props.data[match]);
+
+      console.log(header, match, props, props[match], props.data[match], found);
+
+      if(found){
+        response = found.description;
       }
     }
 
