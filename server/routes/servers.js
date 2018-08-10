@@ -5,7 +5,7 @@ const Server = require('../schemas/Servers').schema;
 
 servers.get('/', (req, res, next) => {
   // Get servers from database
-  Server.find({}, {_id: 0, __v: 0}, (err, data) => {
+  Server.find({}, {__v: 0}, (err, data) => {
     if(err){
       next(err);
       return;
@@ -32,6 +32,9 @@ servers.post('/', (req, res, next) => {
 
     // Remove database specific keys from duplication
     delete data.__v;
+
+    // Rename _id to id
+    data.id = data._id;
     delete data._id;
 
     res.send(data);
@@ -82,6 +85,9 @@ servers.put('/:serverName', (req, res, next) => {
 
     // Remove database specific keys from duplication
     delete data.__v;
+
+    // Rename _id to id
+    data.id = data._id;
     delete data._id;
 
     res.send(data);

@@ -4,7 +4,7 @@ const Server = require('../schemas/Servers').schema;
 
 purposes.get('/', (req, res, next) => {
   // Database call
-  Purpose.find({}, {_id: 0, __v: 0}, (err, data) => {
+  Purpose.find({}, {__v: 0}, (err, data) => {
     if(err){
       next(err);
       return;
@@ -27,6 +27,9 @@ purposes.post('/', (req, res, next) => {
 
     // Remove database specific keys from duplication
     delete data.__v;
+   
+    // Rename _id to id
+    data.id = data._id;
     delete data._id;
 
     res.send(data);
@@ -85,6 +88,9 @@ purposes.put('/:code', (req, res, next) => {
 
     // Remove database specific keys from response
     delete data.__v;
+
+    // Rename _id to id
+    data.id = data._id;
     delete data._id;
 
     res.send(data);

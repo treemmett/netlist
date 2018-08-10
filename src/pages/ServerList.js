@@ -222,8 +222,6 @@ const Row = props => {
 
       const found = props[match].find(obj => obj.code === props.data[match]);
 
-      console.log(header, match, props, props[match], props.data[match], found);
-
       if(found){
         response = found.description;
       }
