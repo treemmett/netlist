@@ -46,9 +46,15 @@ servers.get('/keys', (req, res, next) => {
   res.send(headers);
 });
 
-servers.delete('/:serverName', (req, res,next) => {
+servers.delete('/:id', (req, res,next) => {
+  // Check if ID is valid
+  if(!/^[0-9a-fA-F]{24}$/.test(req.params.id)){
+    res.status(400).send({error: ['ID is invalid']});
+    return;
+  }
+
   // Remove document from collection
-  Server.findOneAndRemove({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, (err, resp) => {
+  Server.findOneAndRemove({_id: req.params.id}, (err, resp) => {
     if(err){
       return next(err);
     }
@@ -56,7 +62,7 @@ servers.delete('/:serverName', (req, res,next) => {
     // Check if nothing was deleted
     if(!resp){
       res.status(404).send({
-        error: ['Server "'+req.params.serverName+'" not found.']
+        error: ['Server ID not found.']
       });
       return;
     }
@@ -64,9 +70,15 @@ servers.delete('/:serverName', (req, res,next) => {
     res.end();
   });
 });
-servers.put('/:serverName', (req, res, next) => {
+servers.put('/:id', (req, res, next) => {
+  // Check if ID is valid
+  if(!/^[0-9a-fA-F]{24}$/.test(req.params.id)){
+    res.status(400).send({error: ['ID is invalid']});
+    return;
+  }
+
   // Update server details
-  Server.findOneAndUpdate({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, req.body, {new: true}, (err, resp) => {
+  Server.findOneAndUpdate({_id: req.params.id}, {...req.body, _id: req.params.id}, {new: true}, (err, resp) => {
     if(err){
       next(err);
       return;
@@ -75,7 +87,7 @@ servers.put('/:serverName', (req, res, next) => {
     // Check if no data was updated
     if(!resp){
       res.status(404).send({
-        error: ['Server "'+req.params.serverName+'" not found.']
+        error: ['Server ID not found.']
       });
       return;
     }
@@ -93,6 +105,6 @@ servers.put('/:serverName', (req, res, next) => {
     res.send(data);
   });
 });
-servers.all('/:serverName', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
+servers.all('/:id', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = servers;

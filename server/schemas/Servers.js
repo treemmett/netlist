@@ -40,7 +40,6 @@ const serverSchema = mongoose.Schema({
     trim: true,
     minlength: 3,
     maxlength: 3,
-    required: true,
     uppercase: true,
     validate: {
       validator: function(v){
@@ -61,7 +60,6 @@ const serverSchema = mongoose.Schema({
     trim: true,
     minlength: 2,
     maxlength: 2,
-    required: true,
     validate: {
       validator: v => {
         return /^\d{2}$/.test(v)

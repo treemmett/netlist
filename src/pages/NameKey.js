@@ -165,7 +165,7 @@ class Modal extends Component{
     // Send request
     axios({
       method: update ? 'PUT' : 'POST',
-      url: update ? '/'+this.props.field+'/'+encodeURIComponent(this.props.data.code.toString().toLowerCase()) : '/'+this.props.field,
+      url: update ? '/'+this.props.field+'/'+encodeURIComponent(this.props.data.id) : '/'+this.props.field,
       data: data
     }).then(res => {
       const field = this.props.field === 'locations' ? 'LOCATION' : 'PURPOSE';
@@ -236,7 +236,7 @@ class Modal extends Component{
           <fieldset disabled={this.state.disabled}>
             <form className="grid" onSubmit={this.save}>
               <label htmlFor="code">{config.code}</label>
-              <input onChange={config.formatter} defaultValue={this.props.data.code} disabled={this.props.data.code} id="code" name="code" type="text" autoFocus required/>
+              <input onChange={config.formatter} defaultValue={this.props.data.code} id="code" name="code" type="text" autoFocus required/>
               <label htmlFor="description">{config.description}</label>
               <input defaultValue={this.props.data.description} id="description" name="description" type="text" required/>
               <div className="actions">

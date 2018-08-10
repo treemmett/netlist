@@ -37,39 +37,39 @@ purposes.post('/', (req, res, next) => {
 });
 purposes.all('/', (req, res, next) => res.set('Allow', 'GET, POST').status(405).end());
 
-purposes.delete('/:code', (req, res, next) => {
-  // Check if any servers exist with the received code
-  Server.find({purpose: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, (err, data) => {
+purposes.delete('/:id', (req, res, next) => {
+  // Check if ID is valid
+  if(!/^[0-9a-fA-F]{24}$/.test(req.params.id)){
+    res.status(400).send({error: ['ID is invalid']});
+    return;
+  }
+
+  // Delete purpose
+  Purpose.findOneAndRemove({_id: req.params.id}, (err, resp) => {
     if(err){
       return next(err);
     }
 
-    // Throw if any servers are using the recieved code
-    if(data.length > 0){
-      res.status(409).send({error: ['Unable to delete a purpose while it\'s in use']});
+    // Check if nothing was deleted
+    if(!resp){
+      res.status(404).send({
+        error: ['Purpose ID not found.']
+      });
       return;
     }
 
-    // Attempt to delete key
-    Purpose.findOneAndRemove({code: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, (err, resp) => {
-      if(err){
-        return next(err);
-      }
-
-      // Check if nothing was deleted
-      if(!resp){
-        res.status(404).send({
-          error: ['Purpose code "'+req.params.code+'" not found.']
-        });
-        return;
-      }
-
-      res.end();
-    });
+    res.end();
   });
 });
-purposes.put('/:code', (req, res, next) => {
-  Purpose.findOneAndUpdate({code: {$regex: new RegExp('^'+req.params.code+'$', 'i')}}, {description: req.body.description}, {new: true}, (err, resp) => {
+purposes.put('/:id', (req, res, next) => {
+  // Check if ID is valid
+  if(!/^[0-9a-fA-F]{24}$/.test(req.params.id)){
+    res.status(400).send({error: ['ID is invalid']});
+    return;
+  }
+
+  // Update purpose
+  Purpose.findOneAndUpdate({_id: req.params.id}, {description: req.body.description, code: req.body.code}, {new: true}, (err, resp) => {
     if(err){
       next(err);
       return;
@@ -96,6 +96,6 @@ purposes.put('/:code', (req, res, next) => {
     res.send(data);
   });
 });
-purposes.all('/:code', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
+purposes.all('/:id', (req, res, next) => res.set('Allow', 'DELETE, PUT').status(405).end());
 
 module.exports = purposes;
