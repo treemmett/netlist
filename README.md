@@ -5,6 +5,7 @@
   * [Authorizing requests](#authorizing-requests)
 * [Servers](#servers)
   * [Get all servers](#get-list-of-servers)
+  * [Search for server](#search-for-server)
   * [Create new server](#create-new-server)
   * [Delete server](#delete-server)
   * [Update server](#update-server)
@@ -139,6 +140,40 @@ Content-Type: application/json
   {
     "serverName": "DCA21002",
     "virtualization": "cloud"
+  }
+]
+```
+
+### Search for server
+
+Searches for all servers with a specified name
+
+URL
+
+`/api/servers/:name`
+
+METHOD
+
+`GET`
+
+URL Params
+
+| Name | Description |
+| --- | --- |
+| `name` | Name of server to search using pattern `%name%` |
+
+Success Response
+
+```http
+Status: 200 OK
+Content-Type: application/json
+
+[
+  {
+    "serverName": "DCA21001"
+  },
+  {
+    "serverName": "DCA21002"
   }
 ]
 ```

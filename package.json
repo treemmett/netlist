@@ -38,7 +38,6 @@
     ],
     "verbose": false
   },
-  "homepage": "/",
   "proxy": {
     "/api": {
       "target": "http://localhost:8080/"

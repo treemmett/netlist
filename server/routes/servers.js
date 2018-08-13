@@ -43,6 +43,14 @@ servers.get('/keys', (req, res, next) => {
   res.send(headers);
 });
 
+servers.get('/:serverName', (req, res, next) => {
+  Server.find({serverName: {$regex: new RegExp(req.params.serverName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi')}}, {__v: 0}, (err, resp) => {
+    if(err) return next(resp);
+
+    res.send(resp);
+  });
+});
+
 servers.delete('/:serverName', (req, res,next) => {
   // Remove document from collection
   Server.findOneAndRemove({serverName: {$regex: new RegExp('^'+req.params.serverName+'$', 'i')}}, (err, resp) => {

@@ -20,6 +20,8 @@ app.on('uncaughtRejection', console.error);
 process.on('uncaughtException', err => {
   if(err.code !== "ECONNRESET"){
    process.exit;
+  }else{
+    console.error(err);
   }
 });
 
