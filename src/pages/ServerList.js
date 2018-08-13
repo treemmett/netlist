@@ -15,6 +15,7 @@ import Download from '../svg/Download';
 import PlusCircle from '../svg/PlusCircle';
 import MinusCircle from '../svg/MinusCircle';
 import Check from '../svg/Check';
+import Refresh from '../svg/Refresh';
 import Sad from '../svg/Sad';
 import Sliders from '../svg/Sliders';
 
@@ -22,6 +23,7 @@ import Sliders from '../svg/Sliders';
   return {
     admin: store.login.admin,
     servers: store.servers.data,
+    serversDownloading: store.servers.fetching,
     headers: store.servers.keys,
     selectedHeaders: store.settings.headers,
     locations: store.locations.data,
@@ -98,6 +100,13 @@ export default class ServerList extends Component{
     }
   }
 
+  refreshDate = () => {
+    this.props.dispatch({
+      type: 'GET_SERVERS',
+      payload: axios.get('/servers')
+    });
+  }
+
   render(){
     // Push "Server" key to front, filter any invalid header
     const headerKeys = this.props.selectedHeaders.slice(0).filter(header => this.props.headers[header]);
@@ -138,8 +147,8 @@ export default class ServerList extends Component{
           {this.props.admin ? <div className="btn" onClick={e => this.setState({modal: true})}>New Server</div> : null}
           <SearchBar search={this.search}/>
           <div className="spacer"/>
-          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={e => {e.stopPropagation(); this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu checkSort={this.checkSort}/> : null}
-          </div>
+          <div className="icon" onClick={this.refreshDate}><Refresh className={classNames({spin: this.props.serversDownloading})}/></div>
+          <div className={classNames('icon', {focus: this.state.customizeHeadersMenu})} onClick={e => {e.stopPropagation(); this.setState({customizeHeadersMenu: !this.state.customizeHeadersMenu})}}><Sliders/>{this.state.customizeHeadersMenu ? <HeaderMenu checkSort={this.checkSort}/> : null}</div>
           <div className="icon" onClick={this.download}><Download/></div>
         </div>
 

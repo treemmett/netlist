@@ -312,6 +312,16 @@ form{
   }
 }
 
+@keyframes spin{
+  from{
+    transform: rotate(0deg);
+  }
+
+  to{
+    transform: rotate(360deg);
+  }
+}
+
 .icon{
   position: relative;
   display: inline-block;
@@ -323,6 +333,10 @@ form{
     stroke: darken(#aaa, 50%);
     stroke-linecap: round;
     stroke-linejoin: round;
+
+    &.spin{
+      animation: spin 2s infinite linear;
+    }
   }
 
   &.click{
