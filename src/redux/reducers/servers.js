@@ -61,9 +61,7 @@ export default function(state={
     case 'UPDATE_SERVER': {
       state = {...state};
       // Find index of old data
-      const index = state.data.findIndex(server => {
-        return server.serverName.toLowerCase() === action.payload.serverName.toLowerCase();
-      });
+      const index = state.data.findIndex(server => server.id === action.payload.id);
 
       // Replace data
       if(index > -1){

@@ -131,6 +131,7 @@ Content-Type: application/json
 
 [
   {
+    "id": "5b6ccaef3824a90d1b901718",
     "serverName": "DCA21001",
     "applications": [
       "DNS",
@@ -138,6 +139,7 @@ Content-Type: application/json
     ]
   },
   {
+    "id": "7da13ab313824a90d1b901718",
     "serverName": "DCA21002",
     "virtualization": "cloud"
   }
@@ -208,8 +210,8 @@ Data Params
 | `notes` | String | Notes of server | no |
 | `os` | String | Operating system installed on server | no |
 | `patchDate` | String | Date of the last time the server was updated | no |
-| `purpose` | Integar | 2 number purpose code | **yes** |
-| `serverName` | String | Name of the server | **yes** |
+| `purpose` | Integar | 2 number purpose code | no |
+| `serverName` | String | Name of the server | no |
 | `serverSmes` | Array[String] | Array of server SME's | no |
 | `serverType` | String[`appliance`, `server`] | Type of server | no |
 | `retired` | Boolean | Server is retired | no |
@@ -224,6 +226,7 @@ Status: 201 Created
 Content-Type: application/json
 
 {
+  "id": "7da13ab313824a90d1b901718",
   "serverName": "DCA20013",
 }
  ```
@@ -246,7 +249,7 @@ Delete a given server
 
 URL
 
-`/api/servers/:servername`
+`/api/servers/:id`
 
 Method
 
@@ -256,7 +259,7 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `servername` | Name of the server to delete |
+| `id` | ID of the server to delete |
 
 Success Response
 
@@ -272,7 +275,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Server \"servername\" not found."
+    "Server ID not found."
   ]
 }
 ```
@@ -283,7 +286,7 @@ Update server details
 
 URL
 
-`/api/servers/:servername`
+`/api/servers/:id`
 
 Method
 
@@ -293,7 +296,7 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `servername` | Name of the server to update |
+| `id` | ID of the server to update |
 
 Data Params
 
@@ -330,6 +333,7 @@ Status: 200 OK
 Content-Type: application/json
 
 {
+  "id": "7da13ab313824a90d1b901718",
   "serverName": "DCA20013",
 }
 ```
@@ -342,7 +346,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Server \"servername\" not found."
+    "Server ID not found."
   ]
 }
 ```
@@ -380,10 +384,12 @@ Content-Type: application/json
 
 [
   {
+    "id": "7da13ab313824a90d1b901718",
     "code": "DCA",
     "description": "Seattle"
   },
   {
+    "id": "7da13a7813824a90d1b901718",
     "code": "DEN",
     "description": "Denver"
   }
@@ -416,6 +422,7 @@ Status: 201 Created
 Content-Type: application/json
 
 {
+  "id": "7da13ab313824a90d1b901718",
   "code": "DCA",
   "description": "Seattle"
 }
@@ -440,7 +447,7 @@ Delete a given location
 
 URL
 
-`/api/locations/:code`
+`/api/locations/:id`
 
 Method
 
@@ -450,7 +457,7 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `code` | Code of location to delete |
+| `id` | ID of location to delete |
 
 Success Response
 
@@ -466,18 +473,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Location code \"DCA\" not found"
-  ]
-}
-```
-
-```http
-Status: 409 Conflict
-Content-Type: application/json
-
-{
-  "error": [
-    "Unable to delete a location while it's in use"
+    "Location ID not found."
   ]
 }
 ```
@@ -488,7 +484,7 @@ Update description of location
 
 URL
 
-`/api/locations/:code`
+`/api/locations/:id`
 
 Method
 
@@ -498,12 +494,13 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `code` | Code of location to delete |
+| `id` | ID of location to delete |
 
 Data Params
 
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
+| `code` | String | 3 character code of location | no |
 | `description` | String | Description of location code | no |
 
 Success Response
@@ -513,6 +510,7 @@ Status: 200 OK
 Content-Type: application/json
 
 {
+  "id": "7da13ab313824a90d1b901718",
   "code": "DCA",
   "description": "Portland"
 }
@@ -526,7 +524,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Location code \"DCA\" not found."
+    "Location ID not found."
   ]
 }
 ```
@@ -553,10 +551,12 @@ Content-Type: application/json
 
 [
   {
+    "id": "7da13ab313824a90d1b901718",
     "code": "20",
     "description": "Domain Controller"
   },
   {
+    "id": "7da13ab313824a90d1b901718",
     "code": "21",
     "description": "DCHP"
   }
@@ -613,7 +613,7 @@ Delete a given purpose
 
 URL
 
-`/api/purpose/:code`
+`/api/purpose/:id`
 
 Method
 
@@ -623,7 +623,7 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `code` | Code of purpose to delete |
+| `id` | ID of purpose to delete |
 
 Success Response
 
@@ -639,18 +639,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Purpose code \"23\" not found"
-  ]
-}
-```
-
-```http
-Status: 409 Conflict
-Content-Type: application/json
-
-{
-  "error": [
-    "Unable to delete a purpose while it's in use"
+    "Purpose ID not found."
   ]
 }
 ```
@@ -661,7 +650,7 @@ Update description of purpose
 
 URL
 
-`/api/purposes/:code`
+`/api/purposes/:id`
 
 Method
 
@@ -671,12 +660,13 @@ URL Params
 
 | Name | Description |
 | --- | --- |
-| `code` | Code of purpose to delete |
+| `id` | ID of purpose to delete |
 
 Data Params
 
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
+| `code` | String | 2 character code of purpose | yes |
 | `description` | String | Description of purpose code | no |
 
 Success Response
@@ -686,6 +676,7 @@ Status: 200 OK
 Content-Type: application/json
 
 {
+  "id": "7da13ab313824a90d1b901718",
   "code": "21",
   "description": "Jump Box"
 }
@@ -699,7 +690,7 @@ Content-Type: application/json
 
 {
   "error": [
-    "Purpose code \"23\" not found."
+    "Purpose ID not found."
   ]
 }
 ```

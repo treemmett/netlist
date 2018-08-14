@@ -231,8 +231,6 @@ const Row = props => {
 
       const found = props[match].find(obj => obj.code === props.data[match]);
 
-      console.log(header, match, props, props[match], props.data[match], found);
-
       if(found){
         response = found.description;
       }
@@ -300,7 +298,7 @@ class Modal extends Component{
 
     axios({
       method: update ? 'PUT' : 'POST',
-      url: update ? '/servers/'+encodeURIComponent(this.props.data.serverName.toLowerCase()) : '/servers',
+      url: update ? '/servers/'+encodeURIComponent(this.props.data.id) : '/servers',
       data: data
     }).then(res => {
       // Add new server to store
@@ -452,14 +450,14 @@ class Modal extends Component{
           <div className="title">{this.props.data.serverName ? this.props.data.serverName : 'New server'}</div>
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
-              <label htmlFor="location">Location</label>
-              <select className="select" id="location" name="location" onChange={this.findNext} defaultValue={this.props.data.location || ''} required>{locations}</select>
-              
-              <label htmlFor="purpose">Purpose</label>
-              <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''} required>{purposes}</select>
-
               <label htmlFor="serverName">Server Name</label>
               <input onChange={this.populateDNS} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
+
+              <label htmlFor="location">Location</label>
+              <select className="select" id="location" name="location" onChange={this.findNext} defaultValue={this.props.data.location || ''}>{locations}</select>
+              
+              <label htmlFor="purpose">Purpose</label>
+              <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''}>{purposes}</select>
 
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>

@@ -19,6 +19,21 @@ const schema = mongoose.Schema({
     trim: true,
     required: true
   }
+}, {
+  toObject: {
+    transform: function(doc, ret){
+      // Rname _id to id
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  },
+  toJSON: {
+    transform: function(doc, ret){
+      // Rname _id to id
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  }
 });
 
 schema.pre('findOneAndUpdate', function(next){

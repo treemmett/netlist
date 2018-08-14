@@ -40,7 +40,6 @@ const serverSchema = mongoose.Schema({
     trim: true,
     minlength: 3,
     maxlength: 3,
-    required: true,
     uppercase: true,
     validate: {
       validator: function(v){
@@ -91,6 +90,22 @@ const serverSchema = mongoose.Schema({
     trim: true
   },
   vlan: {type: String, trim: true}
+},
+{
+  toObject: {
+    transform: function(doc, ret){
+      // Rname _id to id
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  },
+  toJSON: {
+    transform: function(doc, ret){
+      // Rname _id to id
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  }
 });
 
 serverSchema.pre('findOneAndUpdate', function(next){

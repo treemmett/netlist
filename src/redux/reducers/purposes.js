@@ -52,9 +52,7 @@ export default function(state={
     case 'UPDATE_PURPOSE': {
       state = {...state};
       // Find index of old data
-      const index = state.data.findIndex(obj => {
-        return obj.code === action.payload.code;
-      });
+      const index = state.data.findIndex(obj => obj.id === action.payload.id);
 
       // Replace data
       if(index > -1){
