@@ -322,7 +322,7 @@ class Modal extends Component{
       return;
     }
 
-    axios.delete('/servers/'+encodeURIComponent(this.props.data.serverName.toLowerCase())).then(() => {
+    axios.delete('/servers/'+encodeURIComponent(this.props.data.id)).then(() => {
       // Remove server from store
       this.props.dispatch({
         type: 'REMOVE_SERVER',
