@@ -28,6 +28,10 @@ export default class extends Component{
     }
   }
 
+  componentDidMount(){
+    document.title = 'Netlist - Name Key';
+  }
+
   open = (field, data) => {
     this.setState({modal: field, openData: data});
   }

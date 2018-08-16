@@ -42,6 +42,16 @@ export default class ServerList extends Component{
     }
   }
 
+  componentDidMount(){
+    document.title = 'Netlist - Servers';
+  }
+
+  componentDidUpdate(){
+    if(!this.state.modal){
+      document.title = 'Netlist - Servers';
+    }
+  }
+
   openDetails = serverName => {
     const server = this.props.servers.find(obj => obj.serverName === serverName);
     this.setState({openServer: server, modal: true});
@@ -269,6 +279,7 @@ class Modal extends Component{
   componentDidMount(){
     // Resize notes field
     autosize(this.notesField);
+    document.title = 'Netlist - ' + (this.props.data.serverName || 'New Server');
   }
 
   save = e => {

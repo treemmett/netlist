@@ -10,6 +10,10 @@ import './Settings.scss';
   }
 })
 export default class extends Component{
+  componentDidMount(){
+    document.title = 'Netlist - Settings';
+  }
+
   render(){
     return (
       <div className="page settings">
