@@ -12,6 +12,10 @@ export default class extends Component{
     }
   }
 
+  componentDidMount(){
+    document.title = 'Netlist - Login';
+  }
+
   login = e => {
     e.preventDefault();
     this.setState({disabled: true});

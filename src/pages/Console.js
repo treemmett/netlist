@@ -14,6 +14,8 @@ const Console = props => {
   }catch(e){/* Failed because first array is empty and *\
             \* reduce isn't smart. Oh well  ¯\_(ツ)_/¯ */}
 
+  document.title = 'Netlist';
+
   return (
     <div className="page console">
       <div className="module">
