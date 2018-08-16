@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import SearchBar from '../components/SearchBar';
 import serialize from '../utils/serializer';
-import toast from '../components/Toast';
 import parseText from '../utils/parseText';
 import './ServerList.scss';
 
@@ -270,22 +269,6 @@ class Modal extends Component{
   componentDidMount(){
     // Resize notes field
     autosize(this.notesField);
-
-    // Check if purposes and locations are set
-    const errors = [];
-    if(!this.props.locations.length){
-      errors.push('Please create a location before adding a server');
-    }
-
-    if(!this.props.purposes.length){
-      errors.push('Please create a purpose before adding a server');
-    }
-
-    // Redirect to naming key if keys aren't set
-    if(errors.length){
-      toast(errors);
-      this.props.history.push('/namekey');
-    }
   }
 
   save = e => {
@@ -450,15 +433,15 @@ class Modal extends Component{
           <div className="title">{this.props.data.serverName ? this.props.data.serverName : 'New server'}</div>
           <fieldset disabled={this.state.disabled}>
             <form onSubmit={this.save} className="grid">
-              <label htmlFor="serverName">Server Name</label>
-              <input onChange={this.populateDNS} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
-
               <label htmlFor="location">Location</label>
               <select className="select" id="location" name="location" onChange={this.findNext} defaultValue={this.props.data.location || ''}>{locations}</select>
               
               <label htmlFor="purpose">Purpose</label>
               <select className="select" id="purpose" name="purpose" onChange={this.findNext} defaultValue={this.props.data.purpose || ''}>{purposes}</select>
 
+              <label htmlFor="serverName">Server Name</label>
+              <input onChange={this.populateDNS} type="text" id="serverName" name="serverName" defaultValue={this.props.data.serverName} required/>
+              
               <label htmlFor="dnsName">DNS Name</label>
               <input type="text" id="dnsName" name="dnsName" defaultValue={this.props.data.dnsName}/>
 
