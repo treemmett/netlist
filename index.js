@@ -1,7 +1,7 @@
 import router from './src/router';
 import Vue from 'vue';
 
-console.log('hi');
+import './src/styles.scss';
 
 new Vue({
   router,
