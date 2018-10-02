@@ -58,7 +58,6 @@ export default {
   }
 
   .brand{
-    font-weight: 500;
     text-align: center;
     margin-bottom: 0.5em;
     font-size: 18px;
@@ -92,5 +91,6 @@ export default {
   .btn{
     margin-left: auto;
     position: relative;
+    height: 35px;
   }
 </style>
