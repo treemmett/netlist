@@ -66,6 +66,18 @@
           </div>
         </div>
       </div>
+
+      <div class="section" v-for="section in currentItem.sections" v-bind:key="section.id" v-bind:class="{open: collapsedSections.indexOf(section.id) === -1}">
+        <div class="title" v-on:click="toggleDetail(section.id)">{{section.name}}</div>
+        <div class="expanded">
+          <div class="property" v-for="item in section.keys" v-bind:key="item.id">
+            <span class="name">{{item.name}}</span>
+            <span class="value">{{item.value}}</span>
+          </div>
+        </div>
+      </div>
+
+      
     </div>
 
   </div>
@@ -82,21 +94,95 @@ export default {
           id: '1226221511',
           name: 'DCA21001',
           location: 'Denver',
-          url: 'dca21001.corp.net'
+          url: 'dca21001.corp.net',
+          sections: [
+            {
+              id: '7019742071',
+              name: 'General',
+              keys: [
+                {
+                  id: '5001210912',
+                  name: 'Location',
+                  value: 'Denver'
+                },
+                {
+                  id: '7822322590',
+                  name: 'URL',
+                  value: 'dca21001.corp.net'
+                }
+              ]
+            },
+            {
+              id: '3923239575',
+              name: 'Hardware',
+              keys: [
+                {
+                  id: '6867152685',
+                  name: 'CPU',
+                  value: 'Intel i5'
+                },
+                {
+                  id: '4159382112',
+                  name: 'Storage',
+                  value: '512GB'
+                }
+              ]
+            }
+          ]
         },
         {
-          id: '2652277226',
+          id: '1226221512',
           name: 'DCA21002',
-          location: 'Portland',
-          url: 'dca21002.corp.net'
-        },
-        {
-          id: '7479384320',
-          name: 'DCA21003',
           location: 'Pleasant Grove',
-          url: 'dca21003.corp.net'
+          url: 'dca21002.corp.net',
+          sections: [
+            {
+              id: '7019742071',
+              name: 'General',
+              keys: [
+                {
+                  id: '5001210914',
+                  name: 'Location',
+                  value: 'Pleasant Grove'
+                }
+              ]
+            },
+            {
+              id: '3923239575',
+              name: 'Hardware',
+              keys: [
+                {
+                  id: '6867152685',
+                  name: 'CPU',
+                  value: 'Intel i7'
+                },
+                {
+                  id: '4159382112',
+                  name: 'Storage',
+                  value: '512GB'
+                }
+              ]
+            },
+            {
+              id: '5770812171',
+              name: 'Updates',
+              keys: [
+                {
+                  id: '2638929976',
+                  name: 'Last Updated By',
+                  value: 'A lost soul'
+                },
+                {
+                  id: '1428116357',
+                  name: 'Last update date',
+                  value: 'Oct 10'
+                }
+              ]
+            }
+          ]
         }
-      ]
+      ],
+      collapsedSections: []
     }
   },
   methods: {
@@ -107,6 +193,19 @@ export default {
     openDetails(e){
       this.detailsOpen = true;
       this.selectedItem = e.id;
+    },
+
+    toggleDetail(id){
+      // Check if the ID is already in the array
+      const index = this.collapsedSections.findIndex(i => i === id);
+
+      // If the element exists, remove it
+      if(index > -1){
+        this.collapsedSections.splice(index, 1);
+      }else{
+        // Add the element if it doesn't
+        this.collapsedSections.push(id);
+      }
     }
   },
   computed: {
@@ -117,7 +216,6 @@ export default {
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
   $blue: #4183f8;
@@ -287,7 +385,72 @@ export default {
         display: flex;
 
         .icon{
-          margin-left: 1em;
+          margin-left: 0.5em;
+        }
+      }
+    }
+
+    .section{
+      margin: 0 2em;
+      overflow: hidden;
+
+      .title{
+        display: flex;
+        align-items: center;
+        padding: 0.5em 0.75em;
+        background-color: #eee;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      
+      .title::after{
+        content: '';
+        position: relative;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: auto;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-right: 4px solid #333;
+        transition: transform 0.2s ease;
+      }
+
+      .expanded{
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+      }
+
+      &.open .expanded{
+        max-height: 10em;
+        overflow: auto;
+        transition: max-height 0.5s ease-in-out;
+      }
+
+      .property{
+        padding: 0.25em 0.75em;
+        font-size: 14px;
+        display: flex;
+
+        &:nth-child(2n){
+          background-color: #f8f8f8;
+        }
+
+        .name{
+          color: #444;
+        }
+
+        .value{
+          margin-left: auto;
+        }
+      }
+
+      &.open{
+        .title{
+          &::after{
+            transform: rotate(-90deg);
+          }
         }
       }
     }
