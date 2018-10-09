@@ -50,9 +50,15 @@
         <div class="name">{{currentItem.name}}</div>
 
         <div class="right">
-          <!-- edit button -->
-          <div class="icon">
-            <svg viewBox="0 0 24 24">
+          <!-- edit and save buttons -->
+          <div class="icon" v-on:click="toggleEdit">
+            <svg viewBox="0 0 24 24" v-if="editMode">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+
+            <svg viewBox="0 0 24 24" v-else>
               <polygon points="16 3 21 8 8 21 3 21 3 16 16 3"/>
             </svg>
           </div>
@@ -71,13 +77,14 @@
         <div class="title" v-on:click="toggleDetail(section.id)">{{section.name}}</div>
         <div class="expanded">
           <div class="property" v-for="item in section.keys" v-bind:key="item.id">
-            <span class="name">{{item.name}}</span>
-            <span class="value">{{item.value}}</span>
+            <label class="name" :for="item.id" v-if="editMode">{{item.name}}</label>
+            <span class="name" v-else>{{item.name}}</span>
+
+            <input class="value" :id="item.id" :value="item.value" v-if="editMode"/>
+            <span class="value" v-else>{{item.value}}</span>
           </div>
         </div>
       </div>
-
-      
     </div>
 
   </div>
@@ -89,6 +96,7 @@ export default {
     return {
       detailsOpen: false,
       selectedItem: undefined,
+      editMode: false,
       tableData: [
         {
           id: '1226221511',
@@ -193,6 +201,7 @@ export default {
     openDetails(e){
       this.detailsOpen = true;
       this.selectedItem = e.id;
+      this.editMode = false;
     },
 
     toggleDetail(id){
@@ -206,6 +215,10 @@ export default {
         // Add the element if it doesn't
         this.collapsedSections.push(id);
       }
+    },
+
+    toggleEdit(){
+      this.editMode = !this.editMode;
     }
   },
   computed: {
@@ -429,9 +442,11 @@ export default {
       }
 
       .property{
-        padding: 0.25em 0.75em;
+        height: 25px;
+        padding: 0 0.75em;
         font-size: 14px;
         display: flex;
+        align-items: center;
 
         &:nth-child(2n){
           background-color: #f8f8f8;
